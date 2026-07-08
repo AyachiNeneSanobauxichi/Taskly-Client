@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { LoginPage } from "@/features/auth/pages/login-page";
 import { RegisterPage } from "@/features/auth/pages/register-page";
 import { TodoPage } from "@/features/todo/pages/todo-page";
-import { NotFoundPage } from "@/components/not-found-page";
+import { NotFoundPage } from "@/components";
 
 const router = createBrowserRouter([
   {
