@@ -1,4 +1,4 @@
-import { apiClient } from "@/lib/api-client";
+import { apiClient } from "@/lib/request";
 import type { Todo } from "../types";
 import type { CreateTodoInput, UpdateTodoInput } from "../schemas";
 

@@ -5,7 +5,7 @@ import { QueryClient } from "@tanstack/react-query";
  * - staleTime: 数据在 30s 内视为新鲜，不重复请求
  * - retry: 失败重试 1 次（4xx 不重试，见下方）
  */
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 30 * 1000,
@@ -23,3 +23,5 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+export { queryClient };

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { queryClient } from "@/lib/query-client";
+import { queryClient } from "@/lib";
 import { Toaster } from "@/components/ui/sonner";
 
 /** 全局 Provider 聚合：所有跨模块的上下文都挂在这里 */

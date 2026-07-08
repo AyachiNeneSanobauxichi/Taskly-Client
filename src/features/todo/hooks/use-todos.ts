@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { todoApi } from "../api/todo.api";
 import type { Todo } from "../types";
 import type { CreateTodoInput, UpdateTodoInput } from "../schemas";
-import type { ApiError } from "@/lib/api-client";
+import type { ApiError } from "@/lib/request";
 
 /** 查询键集中定义，避免散落各处拼错字符串 */
 export const todoKeys = {

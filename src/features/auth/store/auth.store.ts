@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { AuthUser } from "../types";
+import type { AuthTokens, AuthUser } from "../types";
 
 interface AuthState {
   user: AuthUser | null;
@@ -12,8 +12,8 @@ interface AuthState {
     accessToken: string;
     refreshToken: string;
   }) => void;
-  /** 仅更新 access token（刷新令牌时用） */
-  setAccessToken: (accessToken: string) => void;
+  /** 仅更新令牌对（刷新时用，含轮换后的 refresh token） */
+  setTokens: (tokens: AuthTokens) => void;
   /** 清空会话（登出 / 401） */
   clearSession: () => void;
 }
@@ -31,7 +31,8 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       setSession: ({ user, accessToken, refreshToken }) =>
         set({ user, accessToken, refreshToken }),
-      setAccessToken: (accessToken) => set({ accessToken }),
+      setTokens: ({ accessToken, refreshToken }) =>
+        set({ accessToken, refreshToken }),
       clearSession: () =>
         set({ user: null, accessToken: null, refreshToken: null }),
     }),

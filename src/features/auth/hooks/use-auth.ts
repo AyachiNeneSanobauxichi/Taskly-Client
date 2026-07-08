@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { authApi } from "../api/auth.api";
 import { useAuthStore } from "../store/auth.store";
-import { queryClient } from "@/lib/query-client";
-import type { ApiError } from "@/lib/api-client";
+import { queryClient, type ApiError } from "@/lib/request";
 
 /** 登录：成功后写入会话 + 跳主页 */
 export function useLogin() {
