@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import { routeNames, ProtectedRoute, PublicOnlyRoute } from "@/app/router";
+import { ProtectedRoute, PublicOnlyRoute } from "@/app/router/guards";
+import { routeNames } from "@/app/router/route-names";
 import { AppLayout } from "@/components/layout/app-layout";
 import { LoginPage } from "@/features/auth/pages/login-page";
 import { RegisterPage } from "@/features/auth/pages/register-page";
