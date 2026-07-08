@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { todoApi } from "../api/todo.api";
+import { todoApi } from "../api";
 import type { Todo } from "../types";
 import type { CreateTodoInput, UpdateTodoInput } from "../schemas";
 import type { ApiError } from "@/lib/request";

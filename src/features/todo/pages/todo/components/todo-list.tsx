@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { useTodos } from "../hooks/use-todos";
+import { useTodos } from "@/features/todo/hooks";
 import { TodoItem } from "./todo-item";
 
 export function TodoList() {

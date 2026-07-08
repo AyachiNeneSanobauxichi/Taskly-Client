@@ -1,8 +1,8 @@
 import type { ApiError, RetriableConfig } from "./types";
 import { create, type AxiosError, type AxiosInstance } from "axios";
 import { env } from "@/lib/env";
-import { useAuthStore } from "@/features/auth/store/auth.store";
 import { refreshAccessToken } from "@/lib/request/refresh-token";
+import { useAuthStore } from "@/features/auth/store";
 
 /** 主客户端：所有业务请求都走它 */
 const apiClient: AxiosInstance = create({

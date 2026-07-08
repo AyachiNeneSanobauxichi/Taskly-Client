@@ -13,8 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginSchema, type LoginInput } from "../schemas";
-import { useLogin } from "../hooks/use-auth";
+import { loginSchema, type LoginInput } from "@/features/auth/schemas";
+import { useLogin } from "@/features/auth/hooks";
 
 export function LoginPage() {
   const {

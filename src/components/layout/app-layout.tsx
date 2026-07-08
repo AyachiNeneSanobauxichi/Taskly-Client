@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { LogOut, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components";
-import { useAuthStore } from "@/features/auth/store/auth.store";
-import { useLogout } from "@/features/auth/hooks/use-auth";
+import { useAuthStore } from "@/features/auth/store";
+import { useLogout } from "@/features/auth/hooks";
 import { env } from "@/lib/env";
 
 /** 登录后的主框架：顶部栏 + 内容区 */

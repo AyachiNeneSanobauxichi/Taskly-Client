@@ -13,8 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { registerSchema, type RegisterInput } from "../schemas";
-import { useRegister } from "../hooks/use-auth";
+import { registerSchema, type RegisterInput } from "@/features/auth/schemas";
+import { useRegister } from "@/features/auth/hooks";
 
 export function RegisterPage() {
   const {

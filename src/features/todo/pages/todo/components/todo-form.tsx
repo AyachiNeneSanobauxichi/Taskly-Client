@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createTodoSchema, type CreateTodoInput } from "../schemas";
-import { useCreateTodo } from "../hooks/use-todos";
+import { createTodoSchema, type CreateTodoInput } from "@/features/todo/schemas";
+import { useCreateTodo } from "@/features/todo/hooks";
 
 export function TodoForm() {
   const { register, handleSubmit, reset } = useForm<CreateTodoInput>({

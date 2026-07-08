@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useIsAuthenticated } from "@/features/auth/store/auth.store";
+import { useIsAuthenticated } from "@/features/auth/store";
 
 /** 需要登录才能访问；未登录跳转到 /login 并记住来源 */
 function ProtectedRoute() {

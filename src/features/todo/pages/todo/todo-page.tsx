@@ -1,5 +1,4 @@
-import { TodoForm } from "../components/todo-form";
-import { TodoList } from "../components/todo-list";
+import { TodoForm, TodoList } from "./components";
 
 export function TodoPage() {
   return (

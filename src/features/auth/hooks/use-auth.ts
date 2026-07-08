@@ -2,8 +2,8 @@ import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { authApi } from "../api/auth.api";
-import { useAuthStore } from "../store/auth.store";
+import { authApi } from "../api";
+import { useAuthStore } from "../store";
 import { queryClient, type ApiError } from "@/lib/request";
 
 /** 登录：成功后写入会话 + 跳主页 */
