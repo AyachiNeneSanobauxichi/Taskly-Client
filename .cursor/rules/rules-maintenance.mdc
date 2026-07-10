@@ -1,0 +1,41 @@
+---
+description: 规范维护元规则:新增/修改/删除 .claude/skills 下任何开发规范时,必须评估是否同步 ESLint 机器化强制,并同步 .cursor/rules 副本与 README 规则表。用户要求添加规则、修改规则、调整开发规范、改动 .claude/skills 或 eslint.config.ts 时使用。
+globs: .claude/skills/**,.cursor/rules/**,eslint.config.ts,eslint-rules/**
+alwaysApply: false
+---
+
+> 本文件由 `.claude/skills/rules-maintenance/SKILL.md` 同步生成;修改规范时请两边同步。
+
+# 规范维护元规则
+
+`.claude/skills/` 是项目开发规范的**唯一事实源**。每次新增、修改、删除规范条款后,按下面三步同步,缺一不可。
+
+## 1. 评估 ESLint 机器化(核心)
+
+**能静态强制的条款,必须落到 ESLint**,不能只写在 skill 里靠自觉 —— skill 约束"生成什么代码",ESLint + pre-commit 门禁兜底"什么代码进得了仓库"。
+
+逐条问:这条规范违反时,能不能用 AST 静态识别?
+
+| 条款形态 | 落点 |
+| --- | --- |
+| 禁止导入某个包 / 某些具名导出 | `no-restricted-imports`(paths / patterns) |
+| 禁止某种语法结构、JSX 写法、字符串模式 | `no-restricted-syntax`(esquery selector) |
+| 需要读文件路径 + AST 结构的复杂判断 | `eslint-rules/` 自定义规则(`local` 命名空间) |
+| 运行时行为、跨文件重复、分层职责(如"页面只消费数据") | 无法机器化 → skill 里写清楚,靠 code review 与生成时自查 |
+
+已机器化的条款示例:react-19 老写法、lodash / radix-ui 导入禁令、Tailwind 裸色类与任意值、mock 只许 api 目录引用、`local/shadcn-export-prefix`。
+
+**加规则的验收标准:**
+
+- 报错 message 里注明来源规范(`……(见 xxx 规则)`),让被拦的人能找到完整条款。
+- 写个临时坏文件(canary)跑一遍 `npx eslint`,确认规则真的触发,验证完删除。
+- 全量 `pnpm lint` 必须保持零 error/warning:存量违规**要么当场迁移,要么在配置里明确豁免**(如 `src/components/ui/` 的第三方豁免块),不允许留红。
+- 同时反向检查:规范被删除/放宽时,把对应的 ESLint 条目一并移除,不留僵尸规则。
+
+## 2. 同步 .cursor/rules 副本
+
+`.cursor/rules/*.mdc` 是给 Cursor 用的逐字副本。改完 skill 后重新生成对应 `.mdc`:frontmatter 换成 `description` + `globs` + `alwaysApply`,正文里「规则」改为「规则」,文件头保留来源注释。新增 skill 时要为它选择合适的 globs 触发范围。
+
+## 3. 同步 README 规则表
+
+`README.md` 的「开发规范(必读)」一节有规则清单表和"最容易踩的铁律"摘要;新增/删除 skill 或改动核心条款时同步更新,保持数量与概要准确。

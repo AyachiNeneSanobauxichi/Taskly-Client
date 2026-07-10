@@ -3,16 +3,16 @@ import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  ShadcnCard,
+  ShadcnCardContent,
+  ShadcnCardDescription,
+  ShadcnCardFooter,
+  ShadcnCardHeader,
+  ShadcnCardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ShadcnButton } from "@/components/ui/button";
+import { ShadcnInput } from "@/components/ui/input";
+import { ShadcnLabel } from "@/components/ui/label";
 import { createRegisterSchema } from "@/features/auth/schemas";
 import { useRegister } from "@/features/auth/hooks";
 import { useZodForm } from "@/hooks";
@@ -32,16 +32,20 @@ function RegisterPage() {
 
   return (
     <div className="flex min-h-svh items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>{t("register.title")}</CardTitle>
-          <CardDescription>{t("register.description")}</CardDescription>
-        </CardHeader>
+      <ShadcnCard className="w-full max-w-sm">
+        <ShadcnCardHeader>
+          <ShadcnCardTitle>{t("register.title")}</ShadcnCardTitle>
+          <ShadcnCardDescription>
+            {t("register.description")}
+          </ShadcnCardDescription>
+        </ShadcnCardHeader>
         <form onSubmit={handleSubmit((data) => registerMutation.mutate(data))}>
-          <CardContent className="space-y-4">
+          <ShadcnCardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">{t("register.nameLabel")}</Label>
-              <Input id="name" {...register("name")} />
+              <ShadcnLabel htmlFor="name">
+                {t("register.nameLabel")}
+              </ShadcnLabel>
+              <ShadcnInput id="name" {...register("name")} />
               {errors.name && (
                 <p className="text-destructive text-sm">
                   {errors.name.message}
@@ -49,8 +53,10 @@ function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">{t("register.emailLabel")}</Label>
-              <Input
+              <ShadcnLabel htmlFor="email">
+                {t("register.emailLabel")}
+              </ShadcnLabel>
+              <ShadcnInput
                 id="email"
                 type="email"
                 placeholder="you@example.com"
@@ -63,8 +69,14 @@ function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{t("register.passwordLabel")}</Label>
-              <Input id="password" type="password" {...register("password")} />
+              <ShadcnLabel htmlFor="password">
+                {t("register.passwordLabel")}
+              </ShadcnLabel>
+              <ShadcnInput
+                id="password"
+                type="password"
+                {...register("password")}
+              />
               {errors.password && (
                 <p className="text-destructive text-sm">
                   {errors.password.message}
@@ -72,10 +84,10 @@ function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">
+              <ShadcnLabel htmlFor="confirmPassword">
                 {t("register.confirmPasswordLabel")}
-              </Label>
-              <Input
+              </ShadcnLabel>
+              <ShadcnInput
                 id="confirmPassword"
                 type="password"
                 {...register("confirmPassword")}
@@ -86,9 +98,9 @@ function RegisterPage() {
                 </p>
               )}
             </div>
-          </CardContent>
-          <CardFooter className="mt-6 flex-col gap-3">
-            <Button
+          </ShadcnCardContent>
+          <ShadcnCardFooter className="mt-6 flex-col gap-3">
+            <ShadcnButton
               type="submit"
               className="w-full"
               disabled={registerMutation.isPending}
@@ -97,16 +109,16 @@ function RegisterPage() {
                 <Loader2 className="size-4 animate-spin" />
               )}
               {t("register.submit")}
-            </Button>
+            </ShadcnButton>
             <p className="text-muted-foreground text-sm">
               {t("register.hasAccount")}{" "}
               <Link to="/login" className="text-primary hover:underline">
                 {t("register.goLogin")}
               </Link>
             </p>
-          </CardFooter>
+          </ShadcnCardFooter>
         </form>
-      </Card>
+      </ShadcnCard>
     </div>
   );
 }

@@ -8,7 +8,7 @@ alwaysApply: false
 
 # React 19 写法规范
 
-本项目使用 **React 19**(见 `package.json`),按 19 的新写法来,下列老写法**禁止**再出现在新代码里。
+本项目使用 **React 19**(见 `package.json`),按 19 的新写法来,下列老写法**禁止**再出现在新代码里。核心条款已由 ESLint 强制(`eslint.config.ts` 的 no-restricted-imports / no-restricted-syntax),提交时会被 pre-commit 门禁拦截。
 
 ## ❌ forwardRef —— ref 直接当普通 prop
 

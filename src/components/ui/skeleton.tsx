@@ -12,4 +12,4 @@ function Skeleton({ className, ...props }: ComponentProps<"div">) {
   );
 }
 
-export { Skeleton };
+export { Skeleton as ShadcnSkeleton };

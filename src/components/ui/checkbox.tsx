@@ -27,4 +27,4 @@ function Checkbox({
   );
 }
 
-export { Checkbox };
+export { Checkbox as ShadcnCheckbox };

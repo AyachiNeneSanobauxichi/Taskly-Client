@@ -8,7 +8,7 @@ alwaysApply: false
 
 # 代码书写规范
 
-> 本规则的核心条款已由 ESLint 机器化强制(`eslint.config.js`),并通过 husky pre-commit 门禁在提交时拦截(见 `dev-workflow` 规则)。写代码时按下述规范来,lint 报错信息里也会引用对应条款。
+> 本规则的核心条款已由 ESLint 机器化强制(`eslint.config.ts`),并通过 husky pre-commit 门禁在提交时拦截(见 `dev-workflow` 规则)。写代码时按下述规范来,lint 报错信息里也会引用对应条款。
 
 ## 导出:统一放文件底部
 

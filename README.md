@@ -63,7 +63,7 @@ src/
 
 ## 开发规范(必读)
 
-完整规范以 **`.claude/skills/`** 为唯一事实源(Claude Code 自动加载),并同步了一份到 **`.cursor/rules/`**(Cursor 自动加载)。用其他编辑器的直接阅读这两处的 markdown,内容相同。共 11 个主题:
+完整规范以 **`.claude/skills/`** 为唯一事实源(Claude Code 自动加载),并同步了一份到 **`.cursor/rules/`**(Cursor 自动加载)。用其他编辑器的直接阅读这两处的 markdown,内容相同。能静态检查的条款都已落到 ESLint(含 `eslint-rules/` 自定义规则),违反会在保存/提交时直接报错。共 12 个主题:
 
 | 规则                | 内容概要                                                          |
 | ------------------- | ----------------------------------------------------------------- |
@@ -78,6 +78,7 @@ src/
 | `ui-style`          | Shadcn 前缀导出、禁直接导入 radix-ui、颜色/字体只走主题 token     |
 | `i18n`              | 禁硬编码文案、新增翻译四步流程、类型安全的 t()                    |
 | `global-hooks`      | 全局 hooks 清单与新增模板                                         |
+| `rules-maintenance` | 元规则:规范变更时同步 ESLint / cursor 副本 / README               |
 
 几条最容易踩的铁律,先记住:
 

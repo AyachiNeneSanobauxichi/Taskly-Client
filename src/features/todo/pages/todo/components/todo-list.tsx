@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ShadcnSkeleton } from "@/components/ui/skeleton";
 import { useTodos } from "@/features/todo/hooks";
 import { SKELETON_ROW_COUNT } from "./constants";
 import { TodoItem } from "./todo-item";
@@ -13,9 +13,9 @@ function TodoListSkeleton() {
           key={index}
           className="flex items-center gap-3 rounded-lg border px-4 py-3"
         >
-          <Skeleton className="size-4 rounded-sm" />
-          <Skeleton className="h-4 flex-1" />
-          <Skeleton className="size-8" />
+          <ShadcnSkeleton className="size-4 rounded-sm" />
+          <ShadcnSkeleton className="h-4 flex-1" />
+          <ShadcnSkeleton className="size-8" />
         </li>
       ))}
     </ul>

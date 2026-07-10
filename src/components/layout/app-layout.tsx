@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { LogOut, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components";
+import { ShadcnButton } from "@/components";
 import { useAuthStore } from "@/features/auth/store";
 import { useLogout } from "@/features/auth/hooks";
 import { env } from "@/lib/env";
@@ -24,10 +24,10 @@ function AppLayout() {
           <div className="flex items-center gap-3 text-sm">
             <span className="text-muted-foreground">{user?.email}</span>
             <LanguageSwitcher />
-            <Button variant="ghost" size="sm" onClick={logout}>
+            <ShadcnButton variant="ghost" size="sm" onClick={logout}>
               <LogOut className="size-4" />
               {t("actions.logout")}
-            </Button>
+            </ShadcnButton>
           </div>
         </div>
       </header>

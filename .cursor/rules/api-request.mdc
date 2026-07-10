@@ -86,7 +86,7 @@ export const xxxApi = {
 
 约定:
 
-- mock 只允许被**同目录的 api 文件**引用,hooks/页面不感知 mock 的存在。
+- mock 只允许被**同目录的 api 文件**引用,hooks/页面不感知 mock 的存在(已由 ESLint 强制:api/ 目录以外导入 `**/mock` 会报错)。
 - mock 处必须留 `// TODO: mock` 标记(格式见 `coding-style` 规则),方便全局搜索清点。
 - **接口接通后必须整个删除 `mock/` 文件夹**,并清掉 api 文件里的 mock 引用与 TODO 标记;不允许 mock 数据长期留在仓库里。联调接通某个接口时,顺手检查该模块 `mock/` 是否已无引用,无引用即删。
 

@@ -1,7 +1,7 @@
 import type { Todo } from "@/features/todo/types";
 import { Trash2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+import { ShadcnCheckbox } from "@/components/ui/checkbox";
+import { ShadcnButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useDeleteTodo, useUpdateTodo } from "@/features/todo/hooks";
 
@@ -11,7 +11,7 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   return (
     <li className="flex items-center gap-3 rounded-lg border px-4 py-3">
-      <Checkbox
+      <ShadcnCheckbox
         checked={todo.completed}
         onCheckedChange={(checked) =>
           updateTodo.mutate({ id: todo.id, input: { completed: !!checked } })
@@ -25,7 +25,7 @@ function TodoItem({ todo }: { todo: Todo }) {
       >
         {todo.title}
       </span>
-      <Button
+      <ShadcnButton
         variant="ghost"
         size="icon"
         className="text-muted-foreground hover:text-destructive"
@@ -33,7 +33,7 @@ function TodoItem({ todo }: { todo: Todo }) {
         disabled={deleteTodo.isPending}
       >
         <Trash2 className="size-4" />
-      </Button>
+      </ShadcnButton>
     </li>
   );
 }

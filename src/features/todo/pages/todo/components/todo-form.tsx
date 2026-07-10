@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ShadcnButton } from "@/components/ui/button";
+import { ShadcnInput } from "@/components/ui/input";
 import { createTodoSchema } from "@/features/todo/schemas";
 import { useCreateTodo } from "@/features/todo/hooks";
 import { useZodForm } from "@/hooks";
@@ -23,11 +23,11 @@ function TodoForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex gap-2">
-      <Input placeholder={t("form.placeholder")} {...register("title")} />
-      <Button type="submit" disabled={createTodo.isPending}>
+      <ShadcnInput placeholder={t("form.placeholder")} {...register("title")} />
+      <ShadcnButton type="submit" disabled={createTodo.isPending}>
         <Plus className="size-4" />
         {t("form.submit")}
-      </Button>
+      </ShadcnButton>
     </form>
   );
 }

@@ -9,17 +9,17 @@ description: UI 与样式规范:shadcn 组件(Shadcn 前缀导出)、禁止直�
 
 ## 基础组件:优先复用 src/components/ui/
 
-已有:`Button`、`Card`(含 Header/Title/Description/Content/Footer)、`Checkbox`、`Input`、`Label`、`Skeleton`、`Toaster`。从 `@/components` barrel 或 `@/components/ui/xxx` 导入。
+已有:`ShadcnButton`、`ShadcnCard`(含 Header/Title/Description/Content/Footer/Action)、`ShadcnCheckbox`、`ShadcnInput`、`ShadcnLabel`、`ShadcnSkeleton`、`ShadcnToaster`。从 `@/components` barrel 或 `@/components/ui/xxx` 导入。
 
 需要新的基础组件(如 Select、Dialog)→ 放 `src/components/ui/`,**优先取 shadcn 官方现成实现**(shadcn CLI 或复制官方源码);shadcn 没有的,找成熟的社区封装库(见 `dev-workflow` 依赖策略),**禁止自己基于 radix-ui 原语手搓封装**。新增后更新 `components/index.ts`。不要引入其他风格的组件库。
 
 ## shadcn 组件导出:加 Shadcn 前缀
 
-`components/ui/` 下的组件**导出名一律加 `Shadcn` 前缀**(`ShadcnButton`、`ShadcnCard`、`ShadcnDialog`),与自定义业务组件(`Task` 前缀,见 `project-structure` 技能)在导入处一眼区分。文件名保持 shadcn 原名 kebab-case(`button.tsx`)。存量未加前缀的(Button、Card…)渐进迁移,改到哪个顺手改哪个。
+`components/ui/` 下的组件**导出名一律加 `Shadcn` 前缀**(`ShadcnButton`、`ShadcnCard`、`ShadcnDialog`),与自定义业务组件(`Task` 前缀,见 `project-structure` 技能)在导入处一眼区分。文件名保持 shadcn 原名 kebab-case(`button.tsx`),组件内部实现名也保持原名,只在底部导出时改名(`export { Button as ShadcnButton }`),便于后续对照 shadcn 官方更新。存量已全部迁移;本条由自定义 ESLint 规则 `local/shadcn-export-prefix` 强制(`eslint-rules/`)。
 
 ## 禁止直接导入 radix-ui
 
-业务代码(features/、pages/、components/ 非 ui 目录)**禁止出现 `@radix-ui/*` 导入** —— radix 只允许出现在 `components/ui/` 的 shadcn 源码内部。需要 radix 的某个能力时,走上面的新增基础组件流程,通过 `components/ui/` 的封装来用。
+业务代码(features/、pages/、components/ 非 ui 目录)**禁止出现 `radix-ui` / `@radix-ui/*` 导入** —— radix 只允许出现在 `components/ui/` 的 shadcn 源码内部。需要 radix 的某个能力时,走上面的新增基础组件流程,通过 `components/ui/` 的封装来用。本条与「裸色类/任意值颜色字号」均已由 ESLint 强制(`no-restricted-imports` / `no-restricted-syntax`)。
 
 ## 类名合并:一律用 cn()
 
