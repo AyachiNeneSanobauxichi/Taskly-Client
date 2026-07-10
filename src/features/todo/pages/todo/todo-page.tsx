@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
+import { usePageTitle } from "@/hooks";
 import { TodoForm, TodoList } from "./components";
 
-export function TodoPage() {
+function TodoPage() {
   const { t } = useTranslation("todo");
+  usePageTitle(t("page.title"));
 
   return (
     <div className="space-y-6">
@@ -15,3 +17,5 @@ export function TodoPage() {
     </div>
   );
 }
+
+export { TodoPage };

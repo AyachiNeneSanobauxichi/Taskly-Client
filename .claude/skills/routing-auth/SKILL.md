@@ -1,0 +1,41 @@
+---
+name: routing-auth
+description: 路由与认证规范:react-router v7 路由注册、route-names 常量、ProtectedRoute/PublicOnlyRoute 守卫、zustand auth store、登录态管理。新增页面接路由、改路由结构、处理登录/登出/会话时使用。
+---
+
+# 路由与认证规范
+
+路由在 `src/app/router/`,认证状态在 `src/features/auth/store/auth.store.ts`。
+
+## 路由三件套
+
+- `route-names.ts` —— 路径常量集中定义,**组件里不许硬编码路径字符串**(`navigate("/login")` 这类现存写法除外,新代码用 `routeNames.*`)。
+- `guards.tsx` —— 两个守卫:
+  - `ProtectedRoute`:需登录;未登录跳 `/login` 并在 `state.from` 记住来源。
+  - `PublicOnlyRoute`:仅未登录可访问(登录/注册页);已登录直接进主页。
+- `router.tsx` —— `createBrowserRouter` 声明式路由表。
+
+## 新增页面接入路由的流程
+
+1. 按 `project-structure` 技能在 feature 的 `pages/<页面名>/` 建页面文件夹并逐级导出到模块 barrel。
+2. `route-names.ts` 加路径常量。
+3. `router.tsx` 从模块 barrel 导入页面(`import { XxxPage } from "@/features/xxx"`),挂到对应守卫下:需要登录 → `ProtectedRoute > AppLayout` 的 children;游客页 → `PublicOnlyRoute` 的 children。
+
+## auth store(zustand + persist)
+
+- 状态:`user / accessToken / refreshToken`,持久化到 localStorage(key: `taskly.auth`)。
+- 三个 setter:`setSession`(登录/注册成功)、`setTokens`(刷新令牌)、`clearSession`(登出/401)。
+- 判断登录态用派生选择器 `useIsAuthenticated()`,不要直接摸 token。
+- **铁律:store 只持有状态与 setter,不 import api 层** —— `lib/request` 要反向读它,这是防循环依赖的关键(详见 `api-request` 技能)。
+
+## 登录/登出流程(已封装,勿重复造)
+
+- `useLogin()` / `useRegister()`:成功后 `setSession` + toast + `navigate("/", { replace: true })`。
+- `useLogout()`:调后端 logout(失败也继续)→ `clearSession()` → `queryClient.clear()` → 跳登录页。清缓存这步不能省,否则上个账号的数据会泄漏给下个账号。
+
+## 组件中读取状态
+
+```tsx
+const user = useAuthStore((s) => s.user);      // 用选择器订阅单字段,避免多余重渲染
+const isAuthenticated = useIsAuthenticated();
+```

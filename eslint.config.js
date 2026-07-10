@@ -18,6 +18,17 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // 下划线前缀 = 有意不使用(如解构剥离字段 const { confirmPassword: _confirmPassword, ...payload }）
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
+    },
   },
   {
     // shadcn 生成的组件常同时导出组件与变量，关闭 fast-refresh 校验

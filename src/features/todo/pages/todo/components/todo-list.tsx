@@ -1,18 +1,33 @@
-import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTodos } from "@/features/todo/hooks";
+import { SKELETON_ROW_COUNT } from "./constants";
 import { TodoItem } from "./todo-item";
 
-export function TodoList() {
+/** 加载骨架屏:行结构与 TodoItem 一致(勾选框 + 标题 + 删除按钮),避免加载完成后跳动 */
+function TodoListSkeleton() {
+  return (
+    <ul className="space-y-2">
+      {Array.from({ length: SKELETON_ROW_COUNT }, (_item, index) => (
+        <li
+          key={index}
+          className="flex items-center gap-3 rounded-lg border px-4 py-3"
+        >
+          <Skeleton className="size-4 rounded-sm" />
+          <Skeleton className="h-4 flex-1" />
+          <Skeleton className="size-8" />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function TodoList() {
   const { t } = useTranslation("todo");
   const { data: todos, isPending, isError, error } = useTodos();
 
   if (isPending) {
-    return (
-      <div className="text-muted-foreground flex justify-center py-10">
-        <Loader2 className="size-5 animate-spin" />
-      </div>
-    );
+    return <TodoListSkeleton />;
   }
 
   if (isError) {
@@ -40,3 +55,5 @@ export function TodoList() {
     </ul>
   );
 }
+
+export { TodoList };

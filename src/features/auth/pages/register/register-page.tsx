@@ -1,6 +1,4 @@
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -15,21 +13,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  createRegisterSchema,
-  type RegisterInput,
-} from "@/features/auth/schemas";
+import { createRegisterSchema } from "@/features/auth/schemas";
 import { useRegister } from "@/features/auth/hooks";
+import { useZodForm } from "@/hooks";
 
-export function RegisterPage() {
+function RegisterPage() {
   const { t } = useTranslation("auth");
+  // 校验文案跟随语言,t 变化时重建 schema
   const registerSchema = useMemo(() => createRegisterSchema(t), [t]);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
+  } = useZodForm(registerSchema, {
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
   const registerMutation = useRegister();
@@ -114,3 +110,5 @@ export function RegisterPage() {
     </div>
   );
 }
+
+export { RegisterPage };

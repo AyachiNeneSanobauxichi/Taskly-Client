@@ -1,6 +1,4 @@
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -15,18 +13,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createLoginSchema, type LoginInput } from "@/features/auth/schemas";
+import { createLoginSchema } from "@/features/auth/schemas";
 import { useLogin } from "@/features/auth/hooks";
+import { useZodForm } from "@/hooks";
 
-export function LoginPage() {
+function LoginPage() {
   const { t } = useTranslation("auth");
+  // 校验文案跟随语言,t 变化时重建 schema
   const loginSchema = useMemo(() => createLoginSchema(t), [t]);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+  } = useZodForm(loginSchema, {
     defaultValues: { email: "", password: "" },
   });
   const login = useLogin();
@@ -81,3 +80,5 @@ export function LoginPage() {
     </div>
   );
 }
+
+export { LoginPage };
