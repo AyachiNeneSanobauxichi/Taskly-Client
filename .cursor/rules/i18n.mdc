@@ -1,0 +1,52 @@
+---
+description: 国际化规范:i18next 命名空间、新增翻译文案的完整流程、类型安全的 t()、语言切换。写任何用户可见文案、新增/修改翻译、处理中英文切换时使用。
+globs: src/lib/i18n/**,src/**/locales/**
+alwaysApply: false
+---
+
+> 本文件由 `.claude/skills/i18n/SKILL.md` 同步生成;修改规范时请两边同步。
+
+# 国际化规范(i18next + react-i18next)
+
+配置在 `src/lib/i18n/`,语言:`zh`(默认/回退)、`en`。检测顺序 localStorage(key: `taskly.language`)→ 浏览器语言,`load: "languageOnly"` 把 `zh-CN`/`en-US` 归一化为 `zh`/`en`。
+
+## 铁律:UI 里禁止硬编码用户可见文案
+
+所有用户可见字符串必须走 `t()`。中文注释不受限制。
+
+**编写新页面/新组件时必须自动接入 i18n**:同步创建 zh/en 两份文案 key、组件里直接用 `t()`,不需要用户提醒,也不允许"先硬编码后面再换"。
+
+## 命名空间划分
+
+| 命名空间 | 内容 | 文件 |
+|---|---|---|
+| `common`(默认) | 跨模块通用:布局、404、通用按钮 | `locales/{zh,en}/common.json` |
+| `auth` | 登录/注册/校验文案 | `locales/{zh,en}/auth.json` |
+| `todo` | 任务模块文案 | `locales/{zh,en}/todo.json` |
+
+新增 feature 模块 → 新增同名命名空间。
+
+## 新增文案的完整流程(4 步,缺一不可)
+
+1. 在 `locales/zh/<ns>.json` 加中文文案(按 `页面.用途` 分层组织 key,如 `login.title`、`validation.emailInvalid`)。
+2. 在 `locales/en/<ns>.json` 加对应英文 —— **两个文件的 key 结构必须完全一致**。
+3. 若是新命名空间:在 `i18n.ts` 的 `resources`、`ns` 里注册,并在 `i18next.d.ts` 的 `resources` 里补类型(类型以 zh 文件为准)。
+4. 组件里使用:
+
+```tsx
+const { t } = useTranslation("todo");   // 指定命名空间
+t("page.title")                          // key 有类型检查,写错编译报错
+```
+
+## 组件外用文案
+
+- schema 校验文案:用工厂函数传入 `t`,见 `forms` 规则。
+- hooks 里的 toast:hooks 是 React 环境,直接 `useTranslation` 即可(见 `use-auth.ts`)。
+
+## 语言切换
+
+`src/components/layout/language-switcher.tsx`,调 `i18n.changeLanguage(code)`,自动写入 localStorage。可用语言列表从 `@/lib/i18n` 导出的 `supportedLanguages` 读取,不要另行硬编码。
+
+## 排错
+
+IDE 报 `t("xxx")` 类型错误、提示 "Did you mean 'ns:xxx'" 而 `tsc` 通过 → 是编辑器 TS 版本问题(见 `dev-workflow` 规则),不要把 key 改成带前缀形式。

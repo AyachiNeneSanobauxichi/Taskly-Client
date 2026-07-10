@@ -1,0 +1,114 @@
+---
+description: axios 请求层规范:apiClient 用法、api 文件写法、返回值 DTO→前端模型转换、接口未就绪时的 mock 文件夹约定、ApiError 错误归一化、token 刷新、lib/request 循环依赖禁令。新增接口请求、后端接口未就绪需要假数据、接口联调接通、处理接口返回值转换、处理接口错误、改动 src/lib/request 或 feature 的 api/ 目录时使用。
+globs: src/features/**/api/**,src/lib/request/**
+alwaysApply: false
+---
+
+> 本文件由 `.claude/skills/api-request/SKILL.md` 同步生成;修改规范时请两边同步。
+
+# 请求层规范(src/lib/request)
+
+## 架构
+
+- `api-client.ts` —— 主 axios 实例,所有业务请求都走它;自动挂 accessToken、401 时单飞刷新后重放。
+- `refresh-token.ts` —— 刷新专用 client,**刻意不挂拦截器**,避免刷新请求自身 401 时递归。
+- `query-client.ts` —— 全局 TanStack QueryClient(4xx 不重试)。
+- `types.ts` —— `ApiError` 归一化结构:`{ status, message, fieldErrors? }`,业务层统一处理这个结构。
+
+## 新增接口:feature 的 api/ 目录
+
+纯请求、无副作用(不 setState、不弹 toast),对象聚合导出:
+
+```ts
+// features/xxx/api/xxx.api.ts
+import { apiClient } from "@/lib/request";
+import type { Xxx } from "../types";
+
+export const xxxApi = {
+  list: async (): Promise<Xxx[]> => {
+    const { data } = await apiClient.get<Xxx[]>("/xxx");
+    return data;
+  },
+};
+```
+
+副作用(缓存失效、toast、跳转)全部放到 hooks 层,见 `data-fetching` 规则。
+
+## 返回值转换:DTO → 前端模型,在 api 层完成
+
+后端返回结构与前端想用的模型不一致时(字段改名、日期字符串转 Date、扁平化嵌套、补默认值),**转换必须在 api 函数内完成**,api 对外返回的就是前端模型;**禁止把转换逻辑写进 tsx / 组件里**。
+
+```ts
+// features/xxx/api/xxx.api.ts
+/** 后端原始结构,只在 api 文件内可见,不导出 */
+interface XxxDto {
+  task_name: string;
+  created_at: string;
+}
+
+/** DTO → 前端模型;复杂转换可拆到同目录 transforms.ts */
+function toXxx(dto: XxxDto): Xxx {
+  return { name: dto.task_name, createdAt: new Date(dto.created_at) };
+}
+
+export const xxxApi = {
+  list: async (): Promise<Xxx[]> => {
+    const { data } = await apiClient.get<XxxDto[]>("/xxx");
+    return data.map(toXxx);
+  },
+};
+```
+
+- DTO 类型不导出、不进模块 `types.ts`;模块内其他代码只认识前端模型。
+- 转换是纯函数,不做副作用;通用工具(pick/omit/groupBy 等)用 es-toolkit,见 `dev-workflow` 规则。
+- 多接口**合并/派生**属于数据层的事,放 hooks(`useQueries` + `combine`),见 `data-fetching` 规则。
+
+## 接口未就绪:mock 文件夹约定
+
+后端接口还没给出时,在**需要 mock 的 api/ 目录下**建 `mock/` 文件夹集中存放假数据,api 函数暂时返回 mock;mock 的数据形状必须与约定的前端模型一致,这样接通时只改 api 函数内部,hooks/页面零改动。
+
+```
+features/xxx/api/
+├─ index.ts
+├─ xxx.api.ts        # mock 期间由它引用 mock/,对外签名不变
+└─ mock/
+   ├─ index.ts
+   └─ xxx.mock.ts    # 假数据 + 模拟延迟
+```
+
+```ts
+// xxx.api.ts(mock 期间)
+export const xxxApi = {
+  // TODO: mock —— 后端 /xxx 接口未就绪,接通后删除 mock/ 文件夹并恢复真实请求
+  list: async (): Promise<Xxx[]> => mockXxxList(),
+};
+```
+
+约定:
+
+- mock 只允许被**同目录的 api 文件**引用,hooks/页面不感知 mock 的存在。
+- mock 处必须留 `// TODO: mock` 标记(格式见 `coding-style` 规则),方便全局搜索清点。
+- **接口接通后必须整个删除 `mock/` 文件夹**,并清掉 api 文件里的 mock 引用与 TODO 标记;不允许 mock 数据长期留在仓库里。联调接通某个接口时,顺手检查该模块 `mock/` 是否已无引用,无引用即删。
+
+## ⚠️ 循环依赖禁令(重要)
+
+`lib/request` 需要反向读取 auth 状态,依赖链是:
+`api-client → auth store → (无 api 依赖)`,而 `auth 模块 barrel → api → lib/request`。
+
+因此 **`src/lib/request/` 下的文件只能从叶子子路径导入 auth**:
+
+```ts
+// ✅ 正确
+import { useAuthStore } from "@/features/auth/store";
+import type { AuthTokens } from "@/features/auth/types";
+
+// ❌ 禁止 —— 会形成循环依赖,导致 "Cannot access 'xxx' before initialization"
+import { useAuthStore } from "@/features/auth";
+```
+
+如果 linter/IDE 自动把它改成模块 barrel 导入,**必须改回来**。同理,`auth.store.ts` 不允许 import 任何 api 层代码。
+
+## 错误处理约定
+
+- 拦截器已把所有错误归一化为 `ApiError`,业务层直接 `error.message` 展示(通常 `toast.error(error.message)`)。
+- 字段级校验错误在 `error.fieldErrors`(如 `{ email: ["已被注册"] }`)。

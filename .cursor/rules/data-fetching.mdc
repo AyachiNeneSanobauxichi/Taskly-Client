@@ -1,0 +1,108 @@
+---
+description: TanStack Query 数据获取规范:queryKeys 工厂、useQuery/useMutation 写法、乐观更新与回滚模板、缓存失效策略、多接口合并与派生数据(select/useQueries)。写数据获取 hooks、合并多个接口、派生/加工接口数据、列表增删改查、处理 loading/error 状态时使用。
+globs: src/features/**/hooks/**
+alwaysApply: false
+---
+
+> 本文件由 `.claude/skills/data-fetching/SKILL.md` 同步生成;修改规范时请两边同步。
+
+# 数据获取规范(TanStack Query v5)
+
+hooks 放在 `features/<模块>/hooks/`,参考实现:`src/features/todo/hooks/use-todos.ts`。
+
+## queryKeys 集中定义
+
+每个模块的查询键用工厂对象集中管理,避免字符串散落拼错:
+
+```ts
+export const todoKeys = {
+  all: ["todos"] as const,
+  list: () => [...todoKeys.all, "list"] as const,
+};
+```
+
+## 查询
+
+```ts
+export function useTodos() {
+  return useQuery({ queryKey: todoKeys.list(), queryFn: todoApi.list });
+}
+```
+
+组件里用 `isPending / isError / data` 三态渲染(见 `todo-list.tsx`)。`isPending` 分支**必须渲染骨架屏**(结构与真实内容一致,见 `ui-style` 规则),不要用页面级 spinner。
+
+## 派生与多接口合并:放 hooks,页面只消费数据
+
+**tsx 里禁止做数据加工**(合并多个接口、排序/分组/统计、结构重塑)——页面拿到的必须是可直接渲染的成品数据;JSX 里只允许纯渲染映射(`data.map((item) => <Item …/>)`)。
+
+**单接口派生**用 `select`(有结构共享,派生结果稳定):
+
+```ts
+export function useTodoStats() {
+  return useQuery({
+    queryKey: todoKeys.list(),
+    queryFn: todoApi.list,
+    select: (todos) => groupBy(todos, (t) => t.status), // 工具函数用 es-toolkit
+  });
+}
+```
+
+**多接口合并**用 `useQueries` + `combine`,对外仍是一个 hook、一份成品数据:
+
+```ts
+export function useTodoBoard() {
+  return useQueries({
+    queries: [
+      { queryKey: todoKeys.list(), queryFn: todoApi.list },
+      { queryKey: tagKeys.list(), queryFn: tagApi.list },
+    ],
+    combine: (results) => ({
+      isPending: results.some((r) => r.isPending),
+      isError: results.some((r) => r.isError),
+      data: mergeTodosWithTags(results[0].data, results[1].data),
+    }),
+  });
+}
+```
+
+分层边界:**DTO → 前端模型的转换在 api 层**(见 `api-request` 规则);**跨接口合并/派生在 hooks 层**;页面/组件只消费。合并逻辑复杂时拆成纯函数放模块内 `utils.ts`,不要内联在 hook 里。
+
+## 变更的两种模板
+
+**简单失效**(新建等):成功后 `invalidateQueries` 重拉:
+
+```ts
+return useMutation({
+  mutationFn: todoApi.create,
+  onSuccess: () => qc.invalidateQueries({ queryKey: todoKeys.list() }),
+  onError: (error: ApiError) => toast.error(error.message),
+});
+```
+
+**乐观更新**(更新/删除):`onMutate` 先改本地并保存快照,`onError` 回滚,`onSettled` 失效:
+
+```ts
+onMutate: async ({ id, input }) => {
+  await qc.cancelQueries({ queryKey: todoKeys.list() });
+  const previous = qc.getQueryData<Todo[]>(todoKeys.list());
+  qc.setQueryData<Todo[]>(todoKeys.list(), (old) =>
+    (old ?? []).map((t) => (t.id === id ? { ...t, ...input } : t)),
+  );
+  return { previous };
+},
+onError: (error: ApiError, _vars, context) => {
+  qc.setQueryData(todoKeys.list(), context?.previous);
+  toast.error(error.message);
+},
+onSettled: () => qc.invalidateQueries({ queryKey: todoKeys.list() }),
+```
+
+## 全局配置(勿在单处随意覆盖)
+
+`src/lib/request/query-client.ts`:staleTime 30s、gcTime 5min、关窗口聚焦重拉、**4xx 不重试**、mutation 不重试。登出时会 `queryClient.clear()`。
+
+## 约定
+
+- 错误 toast 统一在 mutation 的 `onError` 里做,error 类型标注为 `ApiError`。
+- 成功 toast / 路由跳转等副作用也放 hooks 层,组件只调 `mutate`。
+- hook 命名:`useXxx`(查询)、`useCreateXxx / useUpdateXxx / useDeleteXxx`(变更)。
