@@ -8,7 +8,7 @@ import { env } from "@/lib/env";
 import { LanguageSwitcher } from "./language-switcher";
 
 /** 登录后的主框架：顶部栏 + 内容区 */
-export function AppLayout() {
+function AppLayout() {
   const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const logout = useLogout();
@@ -37,3 +37,5 @@ export function AppLayout() {
     </div>
   );
 }
+
+export { AppLayout };

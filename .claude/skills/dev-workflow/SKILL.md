@@ -21,12 +21,12 @@ pnpm add -D <pkg>     # 安装开发依赖
 
 ## 常用命令
 
-| 命令 | 作用 |
-|---|---|
-| `pnpm dev` | 启动 Vite dev server(默认 http://localhost:5173) |
-| `pnpm build` | `tsc -b && vite build`,类型检查 + 生产构建 |
-| `pnpm lint` | ESLint 全量检查 |
-| `pnpm format` | Prettier 全量格式化 |
+| 命令          | 作用                                             |
+| ------------- | ------------------------------------------------ |
+| `pnpm dev`    | 启动 Vite dev server(默认 http://localhost:5173) |
+| `pnpm build`  | `tsc -b && vite build`,类型检查 + 生产构建       |
+| `pnpm lint`   | ESLint 全量检查                                  |
+| `pnpm format` | Prettier 全量格式化                              |
 
 ## 验证边界(重要)
 
@@ -39,6 +39,15 @@ pnpm add -D <pkg>     # 安装开发依赖
 
 - ❌ 真正发出 API 请求(调后端接口验证)
 - ❌ 启动无头浏览器 / Playwright / chromium 自动化验证 UI
+
+## 提交门禁(husky pre-commit)
+
+`git commit` 时自动执行,**任何一步失败提交都会被拒绝**,不允许有问题的代码进入仓库:
+
+1. `lint-staged`:对暂存的 `*.{ts,tsx}` 跑 `eslint --fix --max-warnings 0`(严格规则、零警告)+ Prettier,可自动修复的会修复后重新暂存;
+2. `tsc -b`:全量类型检查。
+
+被拦截时:按报错信息修复后重新提交,**禁止用 `--no-verify` 绕过门禁**。ESLint 强制的规范条款(行内导出、混写 type 导入、JSX 硬编码中文、超 200 行、default export 等)详见 `coding-style` / `i18n` 技能。
 
 ## 测试策略
 

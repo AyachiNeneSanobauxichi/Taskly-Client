@@ -8,12 +8,12 @@ import commonEn from "./locales/en/common.json";
 import authEn from "./locales/en/auth.json";
 import todoEn from "./locales/en/todo.json";
 
-export const supportedLanguages = [
+const supportedLanguages = [
   { code: "zh", label: "中文" },
   { code: "en", label: "English" },
 ] as const;
 
-export type SupportedLanguage = (typeof supportedLanguages)[number]["code"];
+type SupportedLanguage = (typeof supportedLanguages)[number]["code"];
 
 /** 所有资源在构建时静态打包，无需异步加载，因此关闭 suspense */
 void i18next
@@ -39,4 +39,5 @@ void i18next
     react: { useSuspense: false },
   });
 
-export { i18next };
+export { i18next, supportedLanguages };
+export type { SupportedLanguage };

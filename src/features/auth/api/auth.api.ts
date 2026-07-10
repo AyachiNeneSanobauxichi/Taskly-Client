@@ -1,9 +1,9 @@
-import { apiClient } from "@/lib/request";
 import type { AuthResponse, AuthUser } from "../types";
 import type { LoginInput, RegisterInput } from "../schemas";
+import { apiClient } from "@/lib/request";
 
 /** 纯接口请求，不含任何副作用（不 setState、不弹 toast） */
-export const authApi = {
+const authApi = {
   login: async (input: LoginInput): Promise<AuthResponse> => {
     const { data } = await apiClient.post<AuthResponse>("/auth/login", input);
     return data;
@@ -28,3 +28,5 @@ export const authApi = {
     await apiClient.post("/auth/logout");
   },
 };
+
+export { authApi };

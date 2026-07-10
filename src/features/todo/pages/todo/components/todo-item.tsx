@@ -1,11 +1,11 @@
+import type { Todo } from "@/features/todo/types";
 import { Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Todo } from "@/features/todo/types";
 import { useDeleteTodo, useUpdateTodo } from "@/features/todo/hooks";
 
-export function TodoItem({ todo }: { todo: Todo }) {
+function TodoItem({ todo }: { todo: Todo }) {
   const updateTodo = useUpdateTodo();
   const deleteTodo = useDeleteTodo();
 
@@ -37,3 +37,5 @@ export function TodoItem({ todo }: { todo: Todo }) {
     </li>
   );
 }
+
+export { TodoItem };

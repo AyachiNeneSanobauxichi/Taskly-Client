@@ -1,5 +1,6 @@
+import type { AxiosError, AxiosInstance } from "axios";
 import type { ApiError, RetriableConfig } from "./types";
-import { create, type AxiosError, type AxiosInstance } from "axios";
+import { create } from "axios";
 import { env } from "@/lib/env";
 import { refreshAccessToken } from "@/lib/request/refresh-token";
 import { useAuthStore } from "@/features/auth/store";

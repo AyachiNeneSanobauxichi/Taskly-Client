@@ -1,6 +1,6 @@
+import type { AuthTokens, AuthUser } from "../types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { AuthTokens, AuthUser } from "../types";
 
 interface AuthState {
   user: AuthUser | null;
@@ -23,7 +23,7 @@ interface AuthState {
  * 注意：本 store 只持有状态与 setter，不 import api 层，
  * 因此 api-client 可以安全地反向读取它而不产生循环依赖。
  */
-export const useAuthStore = create<AuthState>()(
+const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
@@ -44,5 +44,6 @@ export const useAuthStore = create<AuthState>()(
 );
 
 /** 派生选择器：是否已登录 */
-export const useIsAuthenticated = () =>
-  useAuthStore((s) => Boolean(s.accessToken));
+const useIsAuthenticated = () => useAuthStore((s) => Boolean(s.accessToken));
+
+export { useAuthStore, useIsAuthenticated };

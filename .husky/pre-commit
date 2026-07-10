@@ -1,0 +1,6 @@
+# 提交门禁:任何一步失败都会阻止提交
+# 1. lint-staged:对暂存文件跑 ESLint(严格规则,零警告)+ Prettier,自动修复后重新暂存
+pnpm exec lint-staged
+
+# 2. 全量类型检查:tsc -b(app + node 两个 tsconfig,均为 noEmit)
+pnpm exec tsc -b

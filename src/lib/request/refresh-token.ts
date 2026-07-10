@@ -1,8 +1,9 @@
 // 令牌刷新（单飞）：并发 401 时只发起一次刷新请求，其余请求共享同一个 Promise。
-import { create, type AxiosInstance } from "axios";
+import type { AxiosInstance } from "axios";
+import type { AuthTokens } from "@/features/auth/types";
+import { create } from "axios";
 import { env } from "@/lib/env";
 import { useAuthStore } from "@/features/auth/store";
-import type { AuthTokens } from "@/features/auth/types";
 
 /** 刷新专用客户端：刻意不挂任何拦截器，避免刷新请求自身 401 时递归刷新 */
 const refreshClient: AxiosInstance = create({

@@ -1,17 +1,17 @@
-import { z } from "zod";
 import type { useTranslation } from "react-i18next";
+import { z } from "zod";
 
 type AuthT = ReturnType<typeof useTranslation<"auth">>["t"];
 
 /** 校验文案依赖当前语言，需在组件内传入 t 后再创建 schema */
-export const createLoginSchema = (t: AuthT) =>
+const createLoginSchema = (t: AuthT) =>
   z.object({
     email: z.email(t("validation.emailInvalid")),
     password: z.string().min(6, t("validation.passwordMin")),
   });
-export type LoginInput = z.infer<ReturnType<typeof createLoginSchema>>;
+type LoginInput = z.infer<ReturnType<typeof createLoginSchema>>;
 
-export const createRegisterSchema = (t: AuthT) =>
+const createRegisterSchema = (t: AuthT) =>
   z
     .object({
       name: z.string().min(2, t("validation.nameMin")),
@@ -23,4 +23,7 @@ export const createRegisterSchema = (t: AuthT) =>
       message: t("validation.passwordMismatch"),
       path: ["confirmPassword"],
     });
-export type RegisterInput = z.infer<ReturnType<typeof createRegisterSchema>>;
+type RegisterInput = z.infer<ReturnType<typeof createRegisterSchema>>;
+
+export { createLoginSchema, createRegisterSchema };
+export type { LoginInput, RegisterInput };

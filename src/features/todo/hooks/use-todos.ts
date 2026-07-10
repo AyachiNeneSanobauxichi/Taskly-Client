@@ -1,18 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { todoApi } from "../api";
 import type { Todo } from "../types";
 import type { CreateTodoInput, UpdateTodoInput } from "../schemas";
 import type { ApiError } from "@/lib/request";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { todoApi } from "../api";
 
 /** 查询键集中定义，避免散落各处拼错字符串 */
-export const todoKeys = {
+const todoKeys = {
   all: ["todos"] as const,
   list: () => [...todoKeys.all, "list"] as const,
 };
 
 /** 任务列表 */
-export function useTodos() {
+function useTodos() {
   return useQuery({
     queryKey: todoKeys.list(),
     queryFn: todoApi.list,
@@ -20,7 +20,7 @@ export function useTodos() {
 }
 
 /** 新建任务：成功后让列表失效重新拉取 */
-export function useCreateTodo() {
+function useCreateTodo() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: CreateTodoInput) => todoApi.create(input),
@@ -32,7 +32,7 @@ export function useCreateTodo() {
 }
 
 /** 更新任务（含勾选）：乐观更新 —— 先改本地，失败再回滚 */
-export function useUpdateTodo() {
+function useUpdateTodo() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateTodoInput }) =>
@@ -56,7 +56,7 @@ export function useUpdateTodo() {
 }
 
 /** 删除任务：同样乐观更新 */
-export function useDeleteTodo() {
+function useDeleteTodo() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => todoApi.remove(id),
@@ -77,3 +77,5 @@ export function useDeleteTodo() {
     },
   });
 }
+
+export { todoKeys, useCreateTodo, useDeleteTodo, useTodos, useUpdateTodo };

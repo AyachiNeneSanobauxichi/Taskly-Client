@@ -16,4 +16,6 @@ if (!parsed.success) {
   throw new Error("环境变量配置无效，请检查 .env 文件");
 }
 
-export const env = parsed.data;
+const env = parsed.data;
+
+export { env };

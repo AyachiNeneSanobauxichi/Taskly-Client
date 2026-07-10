@@ -5,14 +5,20 @@ description: 代码书写强制规范:导出统一放文件底部、import type 
 
 # 代码书写规范
 
+> 本技能的核心条款已由 ESLint 机器化强制(`eslint.config.js`),并通过 husky pre-commit 门禁在提交时拦截(见 `dev-workflow` 技能)。写代码时按下述规范来,lint 报错信息里也会引用对应条款。
+
 ## 导出:统一放文件底部
 
 先声明,后在文件**最底部**集中导出;类型导出用 `export type`。禁止 default export,禁止 `export function Xxx` 行内导出。
 
 ```ts
-function TodoForm() { /* … */ }
+function TodoForm() {
+  /* … */
+}
 
-interface TodoFormProps { /* … */ }
+interface TodoFormProps {
+  /* … */
+}
 
 export { TodoForm };
 export type { TodoFormProps };

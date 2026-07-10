@@ -1,8 +1,8 @@
-import { apiClient } from "@/lib/request";
 import type { Todo } from "../types";
 import type { CreateTodoInput, UpdateTodoInput } from "../schemas";
+import { apiClient } from "@/lib/request";
 
-export const todoApi = {
+const todoApi = {
   list: async (): Promise<Todo[]> => {
     const { data } = await apiClient.get<Todo[]>("/todos");
     return data;
@@ -22,3 +22,5 @@ export const todoApi = {
     await apiClient.delete(`/todos/${id}`);
   },
 };
+
+export { todoApi };
