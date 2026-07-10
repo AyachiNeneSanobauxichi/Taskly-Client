@@ -1,6 +1,6 @@
 ---
 name: project-structure
-description: 项目目录结构与文件组织规范:feature 模块划分、index.ts 出口文件、页面文件夹、全局 hooks/components 的文件夹模式、task- 组件命名、类型与常量的归属位置。新建功能模块、新建页面、新增组件/hook、移动/重构文件、决定代码放哪里时使用。
+description: 项目目录结构与文件组织规范:feature 模块划分、公共组件/方法的抽取与归属(禁止重复代码)、index.ts 出口文件、页面文件夹、全局 hooks/components 的文件夹模式、task- 组件命名、类型与常量的归属位置。新建功能模块、新建页面、新增组件/hook、发现重复代码、移动/重构文件、决定代码放哪里时使用。
 ---
 
 # 项目结构规范
@@ -48,6 +48,15 @@ features/todo/
 - **跨 feature(横跨组件)的 hooks** → `src/hooks/`;**组件** → `src/components/`;**工具** → `src/lib/utils/`。
 - 类型/常量不堆在实现文件里,拆到同目录 `types.ts` / `constants.ts`(详见 `coding-style` 技能)。
 
+## 公共代码必须抽取:禁止复制粘贴
+
+**相同/近似的组件或方法不允许在仓库里存在多份拷贝。** 准备复制一段已有代码时,就是该抽取的时刻:
+
+- 同一 feature 内两个页面要用 → 抽到 feature 模块级(模块根 `utils.ts` / 模块 `components/` 目录)。
+- 跨 feature 要用 → 抽到全局:组件 → `src/components/`(`task-` 前缀),hooks → `src/hooks/`,工具函数 → `src/lib/utils/`(通用工具先查 es-toolkit,见 `dev-workflow` 技能)。
+- 抽取时按上面「归属判断规则」放到**够用的最小层级**,不要一步全提到全局;后续第三处使用出现、层级不够时再上提。
+- 写新功能前先搜同类实现(同名组件、相似 hook),已有的复用/扩展,不新写一份。
+
 ## 全局 hooks / utils / components:必须文件夹模式
 
 全局层新增的每个单元都是一个文件夹,内部拆开(types.ts / constants.ts 有内容才建,不建空文件):
@@ -63,7 +72,7 @@ src/hooks/use-xxx/          src/components/task-xxx/
 ## 全局组件命名:task- 前缀
 
 - 新增的全局业务组件:文件夹/文件名 `task-` 前缀 kebab-case,导出名 `Task` 前缀 PascalCase。例:`components/task-confirm-dialog/` → `export { TaskConfirmDialog }`。
-- **豁免**:`components/ui/` 下的 shadcn 基础组件(button、card…)视为第三方代码,不加前缀、不强制文件夹模式。
+- **豁免**:`components/ui/` 下的 shadcn 基础组件(button、card…)视为第三方代码,不加 `task-` 前缀、不强制文件夹模式;但导出名统一加 `Shadcn` 前缀与自定义组件区分(见 `ui-style` 技能)。
 - **存量**(AppLayout、LanguageSwitcher、NotFoundPage)渐进迁移:暂不改名,后续大改到它们时再迁移。
 
 ## 导入路径规则

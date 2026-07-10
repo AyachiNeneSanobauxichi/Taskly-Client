@@ -1,6 +1,6 @@
 ---
 name: ui-style
-description: UI 与样式规范:shadcn 风格组件、Tailwind CSS v4、cn() 合并类名、lucide 图标、sonner toast、暗色主题变量。写组件 JSX、调样式、加图标、弹提示时使用。
+description: UI 与样式规范:shadcn 组件(Shadcn 前缀导出)、禁止直接导入 radix-ui、颜色/字体只走主题 token、Tailwind CSS v4、cn() 合并类名、lucide 图标、sonner toast。写组件 JSX、调样式、新增基础组件、加图标、弹提示时使用。
 ---
 
 # UI 与样式规范
@@ -11,7 +11,15 @@ description: UI 与样式规范:shadcn 风格组件、Tailwind CSS v4、cn() 合
 
 已有:`Button`、`Card`(含 Header/Title/Description/Content/Footer)、`Checkbox`、`Input`、`Label`、`Skeleton`、`Toaster`。从 `@/components` barrel 或 `@/components/ui/xxx` 导入。
 
-需要新的基础组件(如 Select、Dialog)→ 按 shadcn 风格新建到 `src/components/ui/`:radix-ui 原语 + `cn()` + `class-variance-authority` 管理变体,并更新 `components/index.ts`。**不要**引入其他组件库。
+需要新的基础组件(如 Select、Dialog)→ 放 `src/components/ui/`,**优先取 shadcn 官方现成实现**(shadcn CLI 或复制官方源码);shadcn 没有的,找成熟的社区封装库(见 `dev-workflow` 依赖策略),**禁止自己基于 radix-ui 原语手搓封装**。新增后更新 `components/index.ts`。不要引入其他风格的组件库。
+
+## shadcn 组件导出:加 Shadcn 前缀
+
+`components/ui/` 下的组件**导出名一律加 `Shadcn` 前缀**(`ShadcnButton`、`ShadcnCard`、`ShadcnDialog`),与自定义业务组件(`Task` 前缀,见 `project-structure` 技能)在导入处一眼区分。文件名保持 shadcn 原名 kebab-case(`button.tsx`)。存量未加前缀的(Button、Card…)渐进迁移,改到哪个顺手改哪个。
+
+## 禁止直接导入 radix-ui
+
+业务代码(features/、pages/、components/ 非 ui 目录)**禁止出现 `@radix-ui/*` 导入** —— radix 只允许出现在 `components/ui/` 的 shadcn 源码内部。需要 radix 的某个能力时,走上面的新增基础组件流程,通过 `components/ui/` 的封装来用。
 
 ## 类名合并:一律用 cn()
 
@@ -21,15 +29,17 @@ description: UI 与样式规范:shadcn 风格组件、Tailwind CSS v4、cn() 合
 <span className={cn("flex-1 text-sm", todo.completed && "text-muted-foreground line-through")}>
 ```
 
-## 颜色:只用语义化 token,不用裸色值
+## 颜色与字体:只用主题 token,禁止硬编码
 
-用 `bg-background`、`text-foreground`、`text-muted-foreground`、`text-primary`、`text-destructive`、`border` 等主题变量类(定义在 `src/index.css`),**不要**写 `text-red-500` 这类硬编码颜色 —— 会破坏暗色主题。
+**颜色**:用 `bg-background`、`text-foreground`、`text-muted-foreground`、`text-primary`、`text-destructive`、`border` 等主题变量类(定义在 `src/index.css` 的 `@theme`),**不要**写 `text-red-500`、`bg-[#fff]` 这类硬编码颜色 —— 会破坏暗色主题。
+
+**字体**:组件里禁止写死字体族和任意字号(`font-["PingFang_SC"]`、`text-[13px]` 等任意值)。字体族、字号体系统一在 `src/index.css` 的 `@theme` 里配置成 token,组件只用 Tailwind 标准字号类(`text-sm` / `text-base`…)和主题字体类。需要新的字号/字体 → 先在主题里加 token,再在组件里引用。
 
 ## 图标:lucide-react
 
 ```tsx
 import { Loader2, Plus, Trash2 } from "lucide-react";
-<Loader2 className="size-4 animate-spin" />   // 尺寸用 size-4 / size-5
+<Loader2 className="size-4 animate-spin" />; // 尺寸用 size-4 / size-5
 ```
 
 ## 加载状态:骨架屏(强制)

@@ -18,6 +18,12 @@ pnpm add -D <pkg>     # 安装开发依赖
 
 - **需要新包时直接 `pnpm add` 安装,无需征求用户同意。**
 - **不要造轮子**,优先级:① 已装的包能实现 → 用已装的包;② 不能 → 找社区成熟包装上(通用 hooks 找 ahooks / usehooks-ts,组件找 shadcn 生态);③ 都没有合适的 → 才手写。
+- **工具函数一律用已装的 `es-toolkit`**(debounce、throttle、groupBy、uniqBy、pick/omit、chunk、clamp 等),禁止手写这些通用工具,也不要引入 lodash。写工具函数前先查 es-toolkit 有没有现成的:
+
+```ts
+import { debounce, groupBy } from "es-toolkit";
+import { pick } from "es-toolkit/compat"; // 个别 API 在 compat 子路径
+```
 
 ## 常用命令
 

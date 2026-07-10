@@ -1,6 +1,6 @@
 ---
 name: data-fetching
-description: TanStack Query 数据获取规范:queryKeys 工厂、useQuery/useMutation 写法、乐观更新与回滚模板、缓存失效策略。写数据获取 hooks、列表增删改查、处理 loading/error 状态时使用。
+description: TanStack Query 数据获取规范:queryKeys 工厂、useQuery/useMutation 写法、乐观更新与回滚模板、缓存失效策略、多接口合并与派生数据(select/useQueries)。写数据获取 hooks、合并多个接口、派生/加工接口数据、列表增删改查、处理 loading/error 状态时使用。
 ---
 
 # 数据获取规范(TanStack Query v5)
@@ -27,6 +27,42 @@ export function useTodos() {
 ```
 
 组件里用 `isPending / isError / data` 三态渲染(见 `todo-list.tsx`)。`isPending` 分支**必须渲染骨架屏**(结构与真实内容一致,见 `ui-style` 技能),不要用页面级 spinner。
+
+## 派生与多接口合并:放 hooks,页面只消费数据
+
+**tsx 里禁止做数据加工**(合并多个接口、排序/分组/统计、结构重塑)——页面拿到的必须是可直接渲染的成品数据;JSX 里只允许纯渲染映射(`data.map((item) => <Item …/>)`)。
+
+**单接口派生**用 `select`(有结构共享,派生结果稳定):
+
+```ts
+export function useTodoStats() {
+  return useQuery({
+    queryKey: todoKeys.list(),
+    queryFn: todoApi.list,
+    select: (todos) => groupBy(todos, (t) => t.status), // 工具函数用 es-toolkit
+  });
+}
+```
+
+**多接口合并**用 `useQueries` + `combine`,对外仍是一个 hook、一份成品数据:
+
+```ts
+export function useTodoBoard() {
+  return useQueries({
+    queries: [
+      { queryKey: todoKeys.list(), queryFn: todoApi.list },
+      { queryKey: tagKeys.list(), queryFn: tagApi.list },
+    ],
+    combine: (results) => ({
+      isPending: results.some((r) => r.isPending),
+      isError: results.some((r) => r.isError),
+      data: mergeTodosWithTags(results[0].data, results[1].data),
+    }),
+  });
+}
+```
+
+分层边界:**DTO → 前端模型的转换在 api 层**(见 `api-request` 技能);**跨接口合并/派生在 hooks 层**;页面/组件只消费。合并逻辑复杂时拆成纯函数放模块内 `utils.ts`,不要内联在 hook 里。
 
 ## 变更的两种模板
 
