@@ -5,6 +5,7 @@ import { ShadcnButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useDeleteTodo, useUpdateTodo } from "@/features/todo/hooks";
 
+/** 单条任务:勾选切换完成状态、展示标题、删除按钮 */
 function TodoItem({ todo }: { todo: Todo }) {
   const updateTodo = useUpdateTodo();
   const deleteTodo = useDeleteTodo();

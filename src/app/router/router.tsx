@@ -19,9 +19,7 @@ const router = createBrowserRouter([
     children: [
       {
         element: <AppLayout />,
-        children: [
-          { index: true, path: routeNames.todo, element: <TodoPage /> },
-        ],
+        children: [{ index: true, element: <TodoPage /> }],
       },
     ],
   },

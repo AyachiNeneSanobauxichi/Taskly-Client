@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { routeNames } from "@/app/router/route-names";
 import {
   ShadcnCard,
   ShadcnCardContent,
@@ -11,14 +12,15 @@ import {
   ShadcnCardTitle,
 } from "@/components/ui/card";
 import { ShadcnButton } from "@/components/ui/button";
-import { ShadcnInput } from "@/components/ui/input";
-import { ShadcnLabel } from "@/components/ui/label";
+import { AuthField } from "@/features/auth/components";
 import { createLoginSchema } from "@/features/auth/schemas";
 import { useLogin } from "@/features/auth/hooks";
-import { useZodForm } from "@/hooks";
+import { usePageTitle, useZodForm } from "@/hooks";
 
+/** 登录页:邮箱 + 密码表单,校验通过后调用 useLogin 登录 */
 function LoginPage() {
   const { t } = useTranslation("auth");
+  usePageTitle(t("login.title"));
   // 校验文案跟随语言,t 变化时重建 schema
   const loginSchema = useMemo(() => createLoginSchema(t), [t]);
   const {
@@ -41,35 +43,21 @@ function LoginPage() {
         </ShadcnCardHeader>
         <form onSubmit={handleSubmit((data) => login.mutate(data))}>
           <ShadcnCardContent className="space-y-4">
-            <div className="space-y-2">
-              <ShadcnLabel htmlFor="email">{t("login.emailLabel")}</ShadcnLabel>
-              <ShadcnInput
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-destructive text-sm">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <ShadcnLabel htmlFor="password">
-                {t("login.passwordLabel")}
-              </ShadcnLabel>
-              <ShadcnInput
-                id="password"
-                type="password"
-                {...register("password")}
-              />
-              {errors.password && (
-                <p className="text-destructive text-sm">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
+            <AuthField
+              id="email"
+              type="email"
+              label={t("login.emailLabel")}
+              placeholder={t("login.emailPlaceholder")}
+              error={errors.email?.message}
+              {...register("email")}
+            />
+            <AuthField
+              id="password"
+              type="password"
+              label={t("login.passwordLabel")}
+              error={errors.password?.message}
+              {...register("password")}
+            />
           </ShadcnCardContent>
           <ShadcnCardFooter className="mt-6 flex-col gap-3">
             <ShadcnButton
@@ -82,7 +70,10 @@ function LoginPage() {
             </ShadcnButton>
             <p className="text-muted-foreground text-sm">
               {t("login.noAccount")}{" "}
-              <Link to="/register" className="text-primary hover:underline">
+              <Link
+                to={routeNames.register}
+                className="text-primary hover:underline"
+              >
                 {t("login.goRegister")}
               </Link>
             </p>

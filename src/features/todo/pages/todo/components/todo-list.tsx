@@ -22,6 +22,7 @@ function TodoListSkeleton() {
   );
 }
 
+/** 任务列表:处理加载(骨架屏)、错误、空态,正常时渲染 TodoItem 列表 */
 function TodoList() {
   const { t } = useTranslation("todo");
   const { data: todos, isPending, isError, error } = useTodos();
