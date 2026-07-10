@@ -1,20 +1,26 @@
 import { z } from "zod";
+import type { useTranslation } from "react-i18next";
 
-export const loginSchema = z.object({
-  email: z.email("邮箱格式不正确"),
-  password: z.string().min(6, "密码至少 6 位"),
-});
-export type LoginInput = z.infer<typeof loginSchema>;
+type AuthT = ReturnType<typeof useTranslation<"auth">>["t"];
 
-export const registerSchema = z
-  .object({
-    name: z.string().min(2, "昵称至少 2 个字符"),
-    email: z.email("邮箱格式不正确"),
-    password: z.string().min(6, "密码至少 6 位"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "两次输入的密码不一致",
-    path: ["confirmPassword"],
+/** 校验文案依赖当前语言，需在组件内传入 t 后再创建 schema */
+export const createLoginSchema = (t: AuthT) =>
+  z.object({
+    email: z.email(t("validation.emailInvalid")),
+    password: z.string().min(6, t("validation.passwordMin")),
   });
-export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<ReturnType<typeof createLoginSchema>>;
+
+export const createRegisterSchema = (t: AuthT) =>
+  z
+    .object({
+      name: z.string().min(2, t("validation.nameMin")),
+      email: z.email(t("validation.emailInvalid")),
+      password: z.string().min(6, t("validation.passwordMin")),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("validation.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
+export type RegisterInput = z.infer<ReturnType<typeof createRegisterSchema>>;

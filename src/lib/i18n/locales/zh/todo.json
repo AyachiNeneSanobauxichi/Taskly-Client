@@ -1,0 +1,19 @@
+{
+  "page": {
+    "title": "我的任务",
+    "description": "管理你今天要完成的事项"
+  },
+  "form": {
+    "placeholder": "添加一个新任务…",
+    "submit": "添加"
+  },
+  "list": {
+    "loadError": "加载失败：",
+    "unknownError": "未知错误",
+    "empty": "还没有任务，先添加一个吧 🎉"
+  },
+  "validation": {
+    "titleRequired": "请输入任务内容",
+    "titleMax": "最多 200 个字符"
+  }
+}

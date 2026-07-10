@@ -1,0 +1,9 @@
+{
+  "actions": {
+    "logout": "退出"
+  },
+  "notFound": {
+    "title": "页面不存在",
+    "backHome": "返回首页"
+  }
+}

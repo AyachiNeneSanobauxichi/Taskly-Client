@@ -1,0 +1,9 @@
+{
+  "actions": {
+    "logout": "Log out"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "backHome": "Back to home"
+  }
+}

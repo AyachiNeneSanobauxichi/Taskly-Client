@@ -1,0 +1,19 @@
+{
+  "page": {
+    "title": "My Tasks",
+    "description": "Manage what you need to get done today"
+  },
+  "form": {
+    "placeholder": "Add a new task…",
+    "submit": "Add"
+  },
+  "list": {
+    "loadError": "Failed to load: ",
+    "unknownError": "Unknown error",
+    "empty": "No tasks yet, add one to get started 🎉"
+  },
+  "validation": {
+    "titleRequired": "Please enter a task title",
+    "titleMax": "Must be at most 200 characters"
+  }
+}

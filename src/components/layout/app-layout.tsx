@@ -1,12 +1,15 @@
 import { Outlet } from "react-router-dom";
 import { LogOut, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components";
 import { useAuthStore } from "@/features/auth/store";
 import { useLogout } from "@/features/auth/hooks";
 import { env } from "@/lib/env";
+import { LanguageSwitcher } from "./language-switcher";
 
 /** 登录后的主框架：顶部栏 + 内容区 */
 export function AppLayout() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const logout = useLogout();
 
@@ -20,9 +23,10 @@ export function AppLayout() {
           </div>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-muted-foreground">{user?.email}</span>
+            <LanguageSwitcher />
             <Button variant="ghost" size="sm" onClick={logout}>
               <LogOut className="size-4" />
-              退出
+              {t("actions.logout")}
             </Button>
           </div>
         </div>

@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Card,
   CardContent,
@@ -13,10 +15,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { registerSchema, type RegisterInput } from "@/features/auth/schemas";
+import {
+  createRegisterSchema,
+  type RegisterInput,
+} from "@/features/auth/schemas";
 import { useRegister } from "@/features/auth/hooks";
 
 export function RegisterPage() {
+  const { t } = useTranslation("auth");
+  const registerSchema = useMemo(() => createRegisterSchema(t), [t]);
   const {
     register,
     handleSubmit,
@@ -31,13 +38,13 @@ export function RegisterPage() {
     <div className="flex min-h-svh items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>注册 Taskly</CardTitle>
-          <CardDescription>创建账号，开始管理你的任务</CardDescription>
+          <CardTitle>{t("register.title")}</CardTitle>
+          <CardDescription>{t("register.description")}</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit((data) => registerMutation.mutate(data))}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">昵称</Label>
+              <Label htmlFor="name">{t("register.nameLabel")}</Label>
               <Input id="name" {...register("name")} />
               {errors.name && (
                 <p className="text-destructive text-sm">
@@ -46,7 +53,7 @@ export function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email">{t("register.emailLabel")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -60,7 +67,7 @@ export function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
+              <Label htmlFor="password">{t("register.passwordLabel")}</Label>
               <Input id="password" type="password" {...register("password")} />
               {errors.password && (
                 <p className="text-destructive text-sm">
@@ -69,7 +76,9 @@ export function RegisterPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">确认密码</Label>
+              <Label htmlFor="confirmPassword">
+                {t("register.confirmPasswordLabel")}
+              </Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -91,12 +100,12 @@ export function RegisterPage() {
               {registerMutation.isPending && (
                 <Loader2 className="size-4 animate-spin" />
               )}
-              注册
+              {t("register.submit")}
             </Button>
             <p className="text-muted-foreground text-sm">
-              已有账号？{" "}
+              {t("register.hasAccount")}{" "}
               <Link to="/login" className="text-primary hover:underline">
-                去登录
+                {t("register.goLogin")}
               </Link>
             </p>
           </CardFooter>

@@ -1,8 +1,10 @@
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useTodos } from "@/features/todo/hooks";
 import { TodoItem } from "./todo-item";
 
 export function TodoList() {
+  const { t } = useTranslation("todo");
   const { data: todos, isPending, isError, error } = useTodos();
 
   if (isPending) {
@@ -16,7 +18,8 @@ export function TodoList() {
   if (isError) {
     return (
       <p className="text-destructive py-10 text-center text-sm">
-        加载失败：{(error as { message?: string }).message ?? "未知错误"}
+        {t("list.loadError")}
+        {(error as { message?: string }).message ?? t("list.unknownError")}
       </p>
     );
   }
@@ -24,7 +27,7 @@ export function TodoList() {
   if (todos.length === 0) {
     return (
       <p className="text-muted-foreground py-10 text-center text-sm">
-        还没有任务，先添加一个吧 🎉
+        {t("list.empty")}
       </p>
     );
   }

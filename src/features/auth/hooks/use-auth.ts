@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { authApi } from "../api";
 import { useAuthStore } from "../store";
@@ -8,6 +9,7 @@ import { queryClient, type ApiError } from "@/lib/request";
 
 /** 登录：成功后写入会话 + 跳主页 */
 export function useLogin() {
+  const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const setSession = useAuthStore((s) => s.setSession);
 
@@ -15,7 +17,7 @@ export function useLogin() {
     mutationFn: authApi.login,
     onSuccess: (data) => {
       setSession(data);
-      toast.success("登录成功");
+      toast.success(t("login.success"));
       navigate("/", { replace: true });
     },
     onError: (error: ApiError) => toast.error(error.message),
@@ -24,6 +26,7 @@ export function useLogin() {
 
 /** 注册：成功后直接登录态 + 跳主页 */
 export function useRegister() {
+  const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const setSession = useAuthStore((s) => s.setSession);
 
@@ -31,7 +34,7 @@ export function useRegister() {
     mutationFn: authApi.register,
     onSuccess: (data) => {
       setSession(data);
-      toast.success("注册成功，欢迎使用");
+      toast.success(t("register.success"));
       navigate("/", { replace: true });
     },
     onError: (error: ApiError) => toast.error(error.message),

@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Card,
   CardContent,
@@ -13,10 +15,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginSchema, type LoginInput } from "@/features/auth/schemas";
+import { createLoginSchema, type LoginInput } from "@/features/auth/schemas";
 import { useLogin } from "@/features/auth/hooks";
 
 export function LoginPage() {
+  const { t } = useTranslation("auth");
+  const loginSchema = useMemo(() => createLoginSchema(t), [t]);
   const {
     register,
     handleSubmit,
@@ -31,13 +35,13 @@ export function LoginPage() {
     <div className="flex min-h-svh items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>登录 Taskly</CardTitle>
-          <CardDescription>输入账号密码进入你的任务列表</CardDescription>
+          <CardTitle>{t("login.title")}</CardTitle>
+          <CardDescription>{t("login.description")}</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit((data) => login.mutate(data))}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email">{t("login.emailLabel")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -51,7 +55,7 @@ export function LoginPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
+              <Label htmlFor="password">{t("login.passwordLabel")}</Label>
               <Input id="password" type="password" {...register("password")} />
               {errors.password && (
                 <p className="text-destructive text-sm">
@@ -63,12 +67,12 @@ export function LoginPage() {
           <CardFooter className="mt-6 flex-col gap-3">
             <Button type="submit" className="w-full" disabled={login.isPending}>
               {login.isPending && <Loader2 className="size-4 animate-spin" />}
-              登录
+              {t("login.submit")}
             </Button>
             <p className="text-muted-foreground text-sm">
-              还没有账号？{" "}
+              {t("login.noAccount")}{" "}
               <Link to="/register" className="text-primary hover:underline">
-                去注册
+                {t("login.goRegister")}
               </Link>
             </p>
           </CardFooter>
