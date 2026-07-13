@@ -14,7 +14,7 @@ function AuthField({ id, label, error, ...inputProps }: AuthFieldProps) {
     <div className="space-y-2">
       <ShadcnLabel htmlFor={id}>{label}</ShadcnLabel>
       <ShadcnInput id={id} {...inputProps} />
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {error && <p className="text-destructive text-caption">{error}</p>}
     </div>
   );
 }

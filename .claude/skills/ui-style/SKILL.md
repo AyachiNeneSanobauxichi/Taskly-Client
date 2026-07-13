@@ -26,14 +26,27 @@ description: UI 与样式规范:shadcn 组件(Shadcn 前缀导出)、禁止直�
 条件类名或合并 props.className 时用 `@/lib/utils` 的 `cn()`(clsx + tailwind-merge,自动处理 `px-2` vs `px-4` 这类冲突):
 
 ```tsx
-<span className={cn("flex-1 text-sm", todo.completed && "text-muted-foreground line-through")}>
+<span className={cn("text-caption flex-1", todo.completed && "text-muted-foreground line-through")}>
 ```
 
 ## 颜色与字体:只用主题 token,禁止硬编码
 
 **颜色**:用 `bg-background`、`text-foreground`、`text-muted-foreground`、`text-primary`、`text-destructive`、`border` 等主题变量类(定义在 `src/index.css` 的 `@theme`),**不要**写 `text-red-500`、`bg-[#fff]` 这类硬编码颜色 —— 会破坏暗色主题。
 
-**字体**:组件里禁止写死字体族和任意字号(`font-["PingFang_SC"]`、`text-[13px]` 等任意值)。字体族、字号体系统一在 `src/index.css` 的 `@theme` 里配置成 token,组件只用 Tailwind 标准字号类(`text-sm` / `text-base`…)和主题字体类。需要新的字号/字体 → 先在主题里加 token,再在组件里引用。
+**字体族**:禁止写死字体族(`font-["PingFang_SC"]`)。字体族统一在 `src/index.css` 的 `@theme`(`--font-sans` / `--font-mono`)配置,`body` 已全局挂 `font-sans`,组件一般无需再写。
+
+**排版(字号 / 字重 / 行高):一个文本元素只用一个语义排版 class**。字号 + 行高 + 字重已在 `src/index.css` 的 `@theme` 里成套封装为语义 token,每个文本元素**只允许写其中一个**,不再在页面上单独拼 `text-sm` / `text-base` / `font-bold` / `leading-*` / `text-[13px]` 等:
+
+| class          | 用途                        |
+| -------------- | --------------------------- |
+| `text-caption` | 辅助/次要说明、错误、元信息 |
+| `text-body`    | 正文                        |
+| `text-label`   | 表单标签、按钮等强调小字    |
+| `text-heading` | 小标题 / 区块标题           |
+| `text-title`   | 页面主标题                  |
+| `text-display` | 大号展示标题(如 404)        |
+
+**颜色和排版是两个正交维度,分开写**:排版走上面这一个语义 class,颜色另用色板 token class,如 `<p className="text-body text-muted-foreground">`。需要新的字号层级 → 先在 `@theme` 里加一套语义 token(size + `--line-height` + `--font-weight`),再在页面引用,**不要**在页面上临时拼字号字重。本条与「裸色类/任意值」一起由 ESLint `no-restricted-syntax` 强制。
 
 ## 图标:lucide-react
 

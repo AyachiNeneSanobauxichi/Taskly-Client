@@ -17,12 +17,14 @@ function AppLayout() {
     <div className="bg-background min-h-svh">
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
-          <div className="flex items-center gap-2 font-semibold">
+          <div className="text-heading flex items-center gap-2">
             <CheckCircle2 className="text-primary size-5" />
             {env.VITE_APP_NAME}
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-muted-foreground">{user?.email}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-muted-foreground text-caption">
+              {user?.email}
+            </span>
             <LanguageSwitcher />
             <ShadcnButton variant="ghost" size="sm" onClick={logout}>
               <LogOut className="size-4" />

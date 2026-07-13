@@ -68,7 +68,7 @@ function LoginPage() {
               {login.isPending && <Loader2 className="size-4 animate-spin" />}
               {t("login.submit")}
             </ShadcnButton>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-caption">
               {t("login.noAccount")}{" "}
               <Link
                 to={routeNames.register}

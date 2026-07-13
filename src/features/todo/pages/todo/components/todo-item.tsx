@@ -20,7 +20,7 @@ function TodoItem({ todo }: { todo: Todo }) {
       />
       <span
         className={cn(
-          "flex-1 text-sm",
+          "text-caption flex-1",
           todo.completed && "text-muted-foreground line-through",
         )}
       >

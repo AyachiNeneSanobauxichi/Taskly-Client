@@ -33,7 +33,7 @@ function TodoList() {
 
   if (isError) {
     return (
-      <p className="text-destructive py-10 text-center text-sm">
+      <p className="text-destructive text-caption py-10 text-center">
         {t("list.loadError")}
         {(error as { message?: string }).message ?? t("list.unknownError")}
       </p>
@@ -42,7 +42,7 @@ function TodoList() {
 
   if (todos.length === 0) {
     return (
-      <p className="text-muted-foreground py-10 text-center text-sm">
+      <p className="text-muted-foreground text-caption py-10 text-center">
         {t("list.empty")}
       </p>
     );

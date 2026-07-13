@@ -66,6 +66,11 @@ const PARENT_RELATIVE_IMPORT_BAN = {
 // Tailwind 调色板色名:业务代码必须用主题 token(text-primary 等),不许 text-red-500 这类裸色
 const PALETTE_COLOR_CLASS = String.raw`(?:^|[\s:])(?:text|bg|border|ring|fill|stroke|from|via|to|outline|decoration|divide|shadow|accent|caret)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d`;
 
+// Tailwind 原子排版类:业务代码禁止在页面上拼字号/字重/行高,一个文本元素只用一个语义排版 class
+// (text-caption/body/label/heading/title/display,见 ui-style 技能)。
+// 只拦字号刻度、字重、行高;text-center 等对齐、text-primary 等颜色、font-sans/mono 字体族不受影响。
+const TYPOGRAPHY_ATOMIC_CLASS = String.raw`(?:^|[\s:])(?:text-(?:xs|sm|base|lg|(?:\d+)?xl)|font-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black)|leading-(?:none|tight|snug|normal|relaxed|loose|\d))`;
+
 export default defineConfig([
   globalIgnores(["dist"]),
   {
@@ -181,9 +186,14 @@ export default defineConfig([
             "禁止 Tailwind 裸色类(如 text-red-500),用主题 token(text-primary / text-destructive 等,见 ui-style 技能)",
         },
         {
-          selector: String.raw`JSXAttribute[name.name='className'] Literal[value=/\[#|(?:text|font)-\[/]`,
+          selector: String.raw`JSXAttribute[name.name='className'] Literal[value=/\[#|(?:text|font|leading)-\[/]`,
           message:
-            "禁止任意值颜色/字号/字体(bg-[#…]、text-[13px]、font-[…]),先在 src/index.css 的 @theme 加 token 再引用(见 ui-style 技能)",
+            "禁止任意值颜色/字号/字体/行高(bg-[#…]、text-[13px]、font-[…]、leading-[…]),先在 src/index.css 的 @theme 加 token 再引用(见 ui-style 技能)",
+        },
+        {
+          selector: `JSXAttribute[name.name='className'] Literal[value=/${TYPOGRAPHY_ATOMIC_CLASS}/]`,
+          message:
+            "禁止在页面拼原子排版类(text-sm / font-bold / leading-* 等),一个文本元素只用一个语义排版 class(text-caption/body/label/heading/title/display,见 ui-style 技能)",
         },
       ],
 
