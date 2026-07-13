@@ -45,15 +45,25 @@ import { useForm, type FieldValues } from "react-hook-form";
 
 参考实现:`src/hooks/use-zod-form/use-zod-form.ts`。
 
-## 类型与常量:拆到同目录的 types.ts / constants.ts
+## 类型与常量:拆到同目录的单独文件,不混进业务代码
 
-类型、常量不堆在实现文件里,拆到**同一目录下**的 `types.ts` 和 `constants.ts`:
+类型、常量不堆在实现文件里,拆到**同一目录下**的单独文件:
 
-- feature 模块级共享 → 模块根 `types.ts`(已有惯例)。
-- 页面/组件级 → 页面文件夹下的 `types.ts` / `constants.ts`(如 `pages/todo/components/constants.ts` 的 `SKELETON_ROW_COUNT`)。
-- 全局 hooks/utils/components → 各自文件夹内(见 `project-structure` 规则的文件夹模式)。
+- **多文件/多页面共享** → 目录级 `types.ts` / `constants.ts`。feature 模块级共享放模块根 `types.ts`(前端模型);页面/组件级放页面文件夹下的 `types.ts` / `constants.ts`(如 `pages/todo/components/constants.ts` 的 `SKELETON_ROW_COUNT`);全局 hooks/utils/components 放各自文件夹内(见 `project-structure` 规则的文件夹模式)。
+- **只服务单个实现文件的专属类型** → 拆到**平级同名 sibling 文件**,与实现文件成对出现,由所在目录 `index.ts` 统一导出;实现文件从**具体文件路径**引入 sibling(走目录 barrel 会与自身成环):
+  - api 的后端原始结构 → `xxx.dto.ts`(见 `api-request` 规则)。
+  - 其余一律 → `xxx.types.ts`。如 store 的 state:`auth.store.ts` + `auth.store.types.ts`(参照 `auth.api.ts` + `auth.dto.ts` 那对)。
 
-组件内部纯粹的局部变量不算常量,不必强拆;凡是魔法数字/可复用配置必须拆。
+```
+features/auth/store/
+├─ index.ts             # export * from "./auth.store"; export * from "./auth.store.types"
+├─ auth.store.ts        # 只有 store 实现,import type { AuthState } from "@/features/auth/store/auth.store.types"
+└─ auth.store.types.ts  # AuthState —— 与 store 平级、专属服务它
+```
+
+**强制**:`*.store.ts` / `*.api.ts` 里**禁止出现 `interface` / `type` 声明**(由 ESLint `no-restricted-syntax` 强制),必须拆到平级 sibling。
+
+例外:组件自身轻量的 `Props` 类型可留在组件文件内(见上方「导出」示例的 `TodoFormProps`)。组件内部纯粹的局部变量不算常量,不必强拆;凡是魔法数字/可复用配置必须拆。
 
 ## 注释规范
 

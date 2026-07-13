@@ -71,6 +71,84 @@ const PALETTE_COLOR_CLASS = String.raw`(?:^|[\s:])(?:text|bg|border|ring|fill|st
 // 只拦字号刻度、字重、行高;text-center 等对齐、text-primary 等颜色、font-sans/mono 字体族不受影响。
 const TYPOGRAPHY_ATOMIC_CLASS = String.raw`(?:^|[\s:])(?:text-(?:xs|sm|base|lg|(?:\d+)?xl)|font-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black)|leading-(?:none|tight|snug|normal|relaxed|loose|\d))`;
 
+// 全项目通用的 no-restricted-syntax 选择器;抽成常量方便 store/api 等 override 在其基础上追加而不丢失基线禁令
+const RESTRICTED_SYNTAX = [
+  {
+    selector: "ExportDefaultDeclaration",
+    message:
+      "禁止 default export,使用命名导出并统一在文件底部 export {}(见 coding-style 技能)",
+  },
+  {
+    selector: "ExportNamedDeclaration[declaration]",
+    message:
+      "禁止行内导出:先声明,再在文件底部统一 export { … } / export type { … }(见 coding-style 技能)",
+  },
+  {
+    selector: "ImportSpecifier[importKind='type']",
+    message:
+      "类型导入用独立的 import type 语句,不要与值导入混写(见 coding-style 技能)",
+  },
+  {
+    selector: String.raw`JSXText[value=/[一-鿿]/]`,
+    message: "UI 文案禁止硬编码中文,必须走 i18n 的 t()(见 i18n 技能)",
+  },
+  {
+    selector: String.raw`JSXAttribute > Literal[value=/[一-鿿]/]`,
+    message: "UI 属性文案禁止硬编码中文,必须走 i18n 的 t()(见 i18n 技能)",
+  },
+  // ── React 19:禁老写法(见 react-19 技能)──
+  {
+    selector:
+      "ImportDeclaration[source.value='react'] > ImportDefaultSpecifier",
+    message:
+      "无需 import React —— 新 JSX transform 下按需具名导入即可(见 react-19 技能)",
+  },
+  {
+    selector:
+      "TSTypeReference[typeName.left.name='React'][typeName.right.name=/^(FC|FunctionComponent)$/]",
+    message: "禁用 React.FC,直接写函数 + 显式 props 类型(见 react-19 技能)",
+  },
+  {
+    selector: "JSXMemberExpression[property.name='Provider']",
+    message:
+      "React 19:直接渲染 <Context value={…}>,不要 <Context.Provider>(见 react-19 技能)",
+  },
+  {
+    selector: "CallExpression[callee.name='useRef'][arguments.length=0]",
+    message:
+      "React 19:useRef 必须传初始值,写 useRef<T>(null)(见 react-19 技能)",
+  },
+  {
+    selector:
+      "AssignmentExpression[left.property.name=/^(defaultProps|propTypes)$/]",
+    message:
+      "React 19 已移除函数组件的 defaultProps/propTypes,默认值用参数解构默认值(见 react-19 技能)",
+  },
+  // ── 颜色/字体只走主题 token(见 ui-style 技能)──
+  {
+    selector: `JSXAttribute[name.name='className'] Literal[value=/${PALETTE_COLOR_CLASS}/]`,
+    message:
+      "禁止 Tailwind 裸色类(如 text-red-500),用主题 token(text-primary / text-destructive 等,见 ui-style 技能)",
+  },
+  {
+    selector: String.raw`JSXAttribute[name.name='className'] Literal[value=/\[#|(?:text|font|leading)-\[/]`,
+    message:
+      "禁止任意值颜色/字号/字体/行高(bg-[#…]、text-[13px]、font-[…]、leading-[…]),先在 src/index.css 的 @theme 加 token 再引用(见 ui-style 技能)",
+  },
+  {
+    selector: `JSXAttribute[name.name='className'] Literal[value=/${TYPOGRAPHY_ATOMIC_CLASS}/]`,
+    message:
+      "禁止在页面拼原子排版类(text-sm / font-bold / leading-* 等),一个文本元素只用一个语义排版 class(text-caption/body/label/heading/title/display,见 ui-style 技能)",
+  },
+];
+
+// 实现文件(*.store.ts / *.api.ts)禁止内联类型声明:类型拆到平级同名 sibling
+const NO_INLINE_TYPE_DECL = {
+  selector: "TSInterfaceDeclaration, TSTypeAliasDeclaration",
+  message:
+    "实现文件不写类型声明,拆到平级同名 sibling 文件:store 用 xxx.store.types.ts、api 后端结构用 xxx.dto.ts,由所在目录 index.ts 导出(见 coding-style / project-structure / api-request 技能)",
+};
+
 export default defineConfig([
   globalIgnores(["dist"]),
   {
@@ -125,77 +203,7 @@ export default defineConfig([
       ],
 
       // ── 导出/文案/React 19/主题规范 ─────────────────────────
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "ExportDefaultDeclaration",
-          message:
-            "禁止 default export,使用命名导出并统一在文件底部 export {}(见 coding-style 技能)",
-        },
-        {
-          selector: "ExportNamedDeclaration[declaration]",
-          message:
-            "禁止行内导出:先声明,再在文件底部统一 export { … } / export type { … }(见 coding-style 技能)",
-        },
-        {
-          selector: "ImportSpecifier[importKind='type']",
-          message:
-            "类型导入用独立的 import type 语句,不要与值导入混写(见 coding-style 技能)",
-        },
-        {
-          selector: String.raw`JSXText[value=/[一-鿿]/]`,
-          message: "UI 文案禁止硬编码中文,必须走 i18n 的 t()(见 i18n 技能)",
-        },
-        {
-          selector: String.raw`JSXAttribute > Literal[value=/[一-鿿]/]`,
-          message: "UI 属性文案禁止硬编码中文,必须走 i18n 的 t()(见 i18n 技能)",
-        },
-        // ── React 19:禁老写法(见 react-19 技能)──
-        {
-          selector:
-            "ImportDeclaration[source.value='react'] > ImportDefaultSpecifier",
-          message:
-            "无需 import React —— 新 JSX transform 下按需具名导入即可(见 react-19 技能)",
-        },
-        {
-          selector:
-            "TSTypeReference[typeName.left.name='React'][typeName.right.name=/^(FC|FunctionComponent)$/]",
-          message:
-            "禁用 React.FC,直接写函数 + 显式 props 类型(见 react-19 技能)",
-        },
-        {
-          selector: "JSXMemberExpression[property.name='Provider']",
-          message:
-            "React 19:直接渲染 <Context value={…}>,不要 <Context.Provider>(见 react-19 技能)",
-        },
-        {
-          selector: "CallExpression[callee.name='useRef'][arguments.length=0]",
-          message:
-            "React 19:useRef 必须传初始值,写 useRef<T>(null)(见 react-19 技能)",
-        },
-        {
-          selector:
-            "AssignmentExpression[left.property.name=/^(defaultProps|propTypes)$/]",
-          message:
-            "React 19 已移除函数组件的 defaultProps/propTypes,默认值用参数解构默认值(见 react-19 技能)",
-        },
-        // ── 颜色/字体只走主题 token(见 ui-style 技能)──
-        {
-          selector: `JSXAttribute[name.name='className'] Literal[value=/${PALETTE_COLOR_CLASS}/]`,
-          message:
-            "禁止 Tailwind 裸色类(如 text-red-500),用主题 token(text-primary / text-destructive 等,见 ui-style 技能)",
-        },
-        {
-          selector: String.raw`JSXAttribute[name.name='className'] Literal[value=/\[#|(?:text|font|leading)-\[/]`,
-          message:
-            "禁止任意值颜色/字号/字体/行高(bg-[#…]、text-[13px]、font-[…]、leading-[…]),先在 src/index.css 的 @theme 加 token 再引用(见 ui-style 技能)",
-        },
-        {
-          selector: `JSXAttribute[name.name='className'] Literal[value=/${TYPOGRAPHY_ATOMIC_CLASS}/]`,
-          message:
-            "禁止在页面拼原子排版类(text-sm / font-bold / leading-* 等),一个文本元素只用一个语义排版 class(text-caption/body/label/heading/title/display,见 ui-style 技能)",
-        },
-      ],
+      "no-restricted-syntax": ["error", ...RESTRICTED_SYNTAX],
 
       // ── 其他强规范 ─────────────────────────────────────────
       "no-console": ["error", { allow: ["warn", "error"] }],
@@ -259,6 +267,19 @@ export default defineConfig([
       "no-restricted-syntax": "off",
       "no-restricted-imports": "off",
       "max-lines": "off",
+    },
+  },
+  {
+    // 实现文件不写类型声明:类型拆到平级同名 sibling(store→*.store.types.ts、api 后端结构→*.dto.ts),
+    // 由所在目录 index.ts 导出(见 coding-style / project-structure / api-request 技能)。
+    // 在基线 no-restricted-syntax 之上追加,不丢失其余禁令。
+    files: ["src/**/*.store.ts", "src/**/*.api.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        ...RESTRICTED_SYNTAX,
+        NO_INLINE_TYPE_DECL,
+      ],
     },
   },
 ]);

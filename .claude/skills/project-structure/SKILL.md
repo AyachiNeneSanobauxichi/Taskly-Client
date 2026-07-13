@@ -46,7 +46,8 @@ features/todo/
 - **仅单页面**使用的 type / component / 常量 → 该页面文件夹(`pages/<页面>/components/`、同目录 `types.ts` / `constants.ts`)。
 - **跨页面**(同 feature)共享 → feature 模块根(`types.ts`、`schemas.ts`)或模块级目录。
 - **跨 feature(横跨组件)的 hooks** → `src/hooks/`;**组件** → `src/components/`;**工具** → `src/lib/utils/`。
-- 类型/常量不堆在实现文件里,拆到同目录 `types.ts` / `constants.ts`(详见 `coding-style` 技能)。
+- **只服务单个实现文件**的专属类型 → 平级同名 sibling 文件:api 后端结构用 `xxx.dto.ts`,其余(如 store 的 state)用 `xxx.types.ts`(`auth.store.ts` + `auth.store.types.ts`)。
+- 类型/常量不堆在实现文件里,拆到同目录 `types.ts` / `constants.ts` 或平级 sibling(详见 `coding-style` 技能);`*.store.ts` / `*.api.ts` 内禁写 `interface` / `type`,ESLint 已强制。
 
 ## 公共代码必须抽取:禁止复制粘贴
 
@@ -90,5 +91,6 @@ src/hooks/use-xxx/          src/components/task-xxx/
 
 - 文件名:kebab-case(`todo-form.tsx`、`use-todos.ts`、`auth.store.ts`)。
 - api 文件带 `.api.ts` 后缀,store 带 `.store.ts` 后缀,页面带 `-page.tsx` 后缀,hooks 以 `use-` 开头。
+- 实现文件的专属类型放平级 sibling:api 后端结构 `xxx.dto.ts`,其余 `xxx.types.ts`(如 `auth.store.types.ts`)。
 - 组件/函数一律命名导出,禁 default export;导出语句统一放文件底部(写法见 `coding-style` 技能)。
 - 注释用中文,风格与现有代码一致(`/** … */` 说明职责)。
