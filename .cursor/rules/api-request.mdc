@@ -38,19 +38,17 @@ export const xxxApi = {
 
 后端返回结构与前端想用的模型不一致时(字段改名、日期字符串转 Date、扁平化嵌套、补默认值),**转换必须在 api 函数内完成**,api 对外返回的就是前端模型;**禁止把转换逻辑写进 tsx / 组件里**。
 
-**DTO 类型不写在 api 文件里**:统一放到 api 的 `types/` 文件夹,经 `index.ts` 出口导出,api 文件从 `@/features/<模块>/api/types` 绝对路径导入(禁止内联 DTO、禁止相对路径,见 `project-structure` 规则)。
+**DTO 类型不写在 api 文件里,而是与它平级**:每个 `xxx.api.ts` 旁边放一个 `xxx.dto.ts` 存后端原始结构,由 api 的 `index.ts` 统一导出。api 文件从 `@/features/<模块>/api/<模块>.dto` **直接引具体文件**(走 api barrel `@/features/<模块>/api` 会与自身成环,故指向文件;禁止内联 DTO、禁止相对路径,见 `project-structure` 规则)。
 
 ```
 features/xxx/api/
-├─ index.ts
+├─ index.ts        # export * from "./xxx.api"; export * from "./xxx.dto"
 ├─ xxx.api.ts
-└─ types/
-   ├─ index.ts        # export * from "./xxx.dto"
-   └─ xxx.dto.ts      # 后端原始结构 XxxDto
+└─ xxx.dto.ts      # 后端原始结构 XxxDto,与 api 文件平级
 ```
 
 ```ts
-// features/xxx/api/types/xxx.dto.ts —— 后端原始结构,只服务 api 层
+// features/xxx/api/xxx.dto.ts —— 后端原始结构,服务 api 层
 interface XxxDto {
   task_name: string;
   created_at: string;
@@ -62,7 +60,7 @@ export type { XxxDto };
 ```ts
 // features/xxx/api/xxx.api.ts
 import type { Xxx } from "@/features/xxx/types";
-import type { XxxDto } from "@/features/xxx/api/types";
+import type { XxxDto } from "@/features/xxx/api/xxx.dto";
 import { apiClient } from "@/lib/request";
 
 /** DTO → 前端模型;复杂转换可拆到同目录 transforms.ts */
@@ -78,7 +76,7 @@ export const xxxApi = {
 };
 ```
 
-- DTO 只服务 api 层:放 `api/types/`,**不进模块根 `types.ts`、不上抛到 feature 根 barrel**;模块内其他代码只认识前端模型。
+- DTO 与 api 文件平级(`api/xxx.dto.ts`)、由 `api/index.ts` 统一导出;**不写进模块根 `types.ts`**(那是前端模型的地方),模块内业务代码只认识前端模型。
 - 转换是纯函数,不做副作用;通用工具(pick/omit/groupBy 等)用 es-toolkit,见 `dev-workflow` 规则。
 - 多接口**合并/派生**属于数据层的事,放 hooks(`useQueries` + `combine`),见 `data-fetching` 规则。
 

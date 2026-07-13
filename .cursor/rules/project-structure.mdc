@@ -31,7 +31,7 @@ features/todo/
 ├─ index.ts        模块总出口:re-export types/schemas/api/hooks/pages
 ├─ types.ts        跨页面共享的类型
 ├─ schemas.ts      跨页面共享的 zod schema
-├─ api/            纯接口请求层(不含副作用);后端 DTO 类型放 api/types/,见 api-request 规则
+├─ api/            纯接口请求层(不含副作用);后端 DTO 放 xxx.dto.ts(与 api 文件平级),见 api-request 规则
 ├─ hooks/          TanStack Query hooks
 ├─ store/          zustand store(如 auth 有,todo 没有)
 └─ pages/

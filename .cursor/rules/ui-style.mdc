@@ -1,5 +1,5 @@
 ---
-description: UI 与样式规范:shadcn 组件(Shadcn 前缀导出)、禁止直接导入 radix-ui、颜色/字体只走主题 token、Tailwind CSS v4、cn() 合并类名、lucide 图标、sonner toast。写组件 JSX、调样式、新增基础组件、加图标、弹提示时使用。
+description: UI 与样式规范:shadcn 组件(Shadcn 前缀导出)、禁止直接导入 radix-ui、颜色/字体只走主题 token、Tailwind CSS v4、cn() 合并类名、lucide 图标、sonner toast、移动端/H5 响应式适配。写组件 JSX、调样式、新增基础组件、加图标、弹提示、做移动端/H5 适配时使用。
 globs: src/**/*.tsx
 alwaysApply: false
 ---
@@ -69,6 +69,17 @@ import { toast } from "sonner";
 toast.success(t("login.success"));
 toast.error(error.message);
 ```
+
+## 移动端 / H5 适配(必做)
+
+写任何 UI 都要考虑 H5(移动端)适配,按**移动优先**开发:base 样式先保证窄屏(≈375px)可用,再用断点向上增强。
+
+- **响应式类**:布局、间距、列数、字号随屏幕变化处用 Tailwind 断点前缀(`sm:` / `md:` / `lg:`),base 面向小屏,断点向上覆盖。
+- **不写死宽度**:容器用 `w-full` + `max-w-*` + `mx-auto`,不用固定 `w-[1200px]`;多列用 `grid` / `flex` + `flex-wrap`,窄屏自然堆叠折行。
+- **触控友好**:可点击元素触控区够大(`size-9`/≈44px 量级),别把点击目标排太密。
+- **整屏容器**用 `min-h-svh`(而非 `min-h-screen`),必要时留刘海屏安全区。
+- **避免横向溢出**:长文本 `truncate` / `break-words`,宽内容(表格等)包一层 `overflow-x-auto`,窄屏不出现整页横向滚动。
+- 自测:用浏览器 devtools 的移动端窄屏视口把关键页面过一遍。
 
 ## 布局惯例
 

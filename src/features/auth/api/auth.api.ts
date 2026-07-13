@@ -1,6 +1,6 @@
 import type { AuthResponse, AuthUser } from "@/features/auth/types";
 import type { LoginInput, RegisterInput } from "@/features/auth/schemas";
-import type { LoginDto, RegisterDto } from "@/features/auth/api/types";
+import type { LoginDto, RegisterDto } from "@/features/auth/api/auth.dto";
 import { apiClient } from "@/lib/request";
 
 /** 纯接口请求，不含任何副作用（不 setState、不弹 toast） */
