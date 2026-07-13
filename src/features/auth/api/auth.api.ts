@@ -7,7 +7,7 @@ import { apiClient } from "@/lib/request";
 const authApi = {
   login: async (input: LoginInput): Promise<AuthResponse> => {
     const { data } = await apiClient.post<LoginDto>("/auth/login", {
-      identifier: input.email,
+      identifier: input.identifier,
       password: input.password,
     });
     return {
@@ -20,7 +20,7 @@ const authApi = {
   register: async (input: RegisterInput): Promise<AuthUser> => {
     // v1 注册只返回用户信息、不下发令牌；confirmPassword 不传后端
     const { data } = await apiClient.post<RegisterDto>("/auth/register", {
-      username: input.name,
+      username: input.username,
       email: input.email,
       password: input.password,
     });

@@ -12,12 +12,12 @@ import {
   ShadcnCardTitle,
 } from "@/components/ui/card";
 import { ShadcnButton } from "@/components/ui/button";
-import { AuthField } from "@/features/auth/components";
+import { AuthAvatar, AuthField } from "@/features/auth/components";
 import { createLoginSchema } from "@/features/auth/schemas";
 import { useLogin } from "@/features/auth/hooks";
 import { usePageTitle, useZodForm } from "@/hooks";
 
-/** 登录页:邮箱 + 密码表单,校验通过后调用 useLogin 登录 */
+/** 登录页:邮箱/用户名 + 密码表单,校验通过后调用 useLogin 登录 */
 function LoginPage() {
   const { t } = useTranslation("auth");
   usePageTitle(t("login.title"));
@@ -28,14 +28,15 @@ function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useZodForm(loginSchema, {
-    defaultValues: { email: "", password: "" },
+    defaultValues: { identifier: "", password: "" },
   });
   const login = useLogin();
 
   return (
     <div className="flex min-h-svh items-center justify-center p-4">
       <ShadcnCard className="w-full max-w-sm">
-        <ShadcnCardHeader>
+        <ShadcnCardHeader className="items-center text-center">
+          <AuthAvatar className="mb-2" />
           <ShadcnCardTitle>{t("login.title")}</ShadcnCardTitle>
           <ShadcnCardDescription>
             {t("login.description")}
@@ -44,17 +45,17 @@ function LoginPage() {
         <form onSubmit={handleSubmit((data) => login.mutate(data))}>
           <ShadcnCardContent className="space-y-4">
             <AuthField
-              id="email"
-              type="email"
-              label={t("login.emailLabel")}
-              placeholder={t("login.emailPlaceholder")}
-              error={errors.email?.message}
-              {...register("email")}
+              id="identifier"
+              label={t("login.identifierLabel")}
+              placeholder={t("login.identifierPlaceholder")}
+              error={errors.identifier?.message}
+              {...register("identifier")}
             />
             <AuthField
               id="password"
               type="password"
               label={t("login.passwordLabel")}
+              placeholder={t("login.passwordPlaceholder")}
               error={errors.password?.message}
               {...register("password")}
             />

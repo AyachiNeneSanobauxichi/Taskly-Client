@@ -12,12 +12,12 @@ import {
   ShadcnCardTitle,
 } from "@/components/ui/card";
 import { ShadcnButton } from "@/components/ui/button";
-import { AuthField } from "@/features/auth/components";
+import { AuthAvatar, AuthField } from "@/features/auth/components";
 import { createRegisterSchema } from "@/features/auth/schemas";
 import { useRegister } from "@/features/auth/hooks";
 import { usePageTitle, useZodForm } from "@/hooks";
 
-/** 注册页:昵称 + 邮箱 + 密码 + 确认密码表单,校验通过后调用 useRegister 注册 */
+/** 注册页:用户名 + 邮箱 + 密码 + 确认密码表单,校验通过后调用 useRegister 注册 */
 function RegisterPage() {
   const { t } = useTranslation("auth");
   usePageTitle(t("register.title"));
@@ -28,14 +28,20 @@ function RegisterPage() {
     handleSubmit,
     formState: { errors },
   } = useZodForm(registerSchema, {
-    defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
   const registerMutation = useRegister();
 
   return (
     <div className="flex min-h-svh items-center justify-center p-4">
       <ShadcnCard className="w-full max-w-sm">
-        <ShadcnCardHeader>
+        <ShadcnCardHeader className="items-center text-center">
+          <AuthAvatar className="mb-2" />
           <ShadcnCardTitle>{t("register.title")}</ShadcnCardTitle>
           <ShadcnCardDescription>
             {t("register.description")}
@@ -44,10 +50,11 @@ function RegisterPage() {
         <form onSubmit={handleSubmit((data) => registerMutation.mutate(data))}>
           <ShadcnCardContent className="space-y-4">
             <AuthField
-              id="name"
-              label={t("register.nameLabel")}
-              error={errors.name?.message}
-              {...register("name")}
+              id="username"
+              label={t("register.usernameLabel")}
+              placeholder={t("register.usernamePlaceholder")}
+              error={errors.username?.message}
+              {...register("username")}
             />
             <AuthField
               id="email"
@@ -61,6 +68,7 @@ function RegisterPage() {
               id="password"
               type="password"
               label={t("register.passwordLabel")}
+              placeholder={t("register.passwordPlaceholder")}
               error={errors.password?.message}
               {...register("password")}
             />
@@ -68,6 +76,7 @@ function RegisterPage() {
               id="confirmPassword"
               type="password"
               label={t("register.confirmPasswordLabel")}
+              placeholder={t("register.confirmPasswordPlaceholder")}
               error={errors.confirmPassword?.message}
               {...register("confirmPassword")}
             />
