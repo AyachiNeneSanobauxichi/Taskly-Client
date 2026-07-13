@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { ShadcnSkeleton } from "@/components/ui/skeleton";
 import { useTodos } from "@/features/todo/hooks";
-import { SKELETON_ROW_COUNT } from "./constants";
-import { TodoItem } from "./todo-item";
+import { SKELETON_ROW_COUNT } from "@/features/todo/pages/todo/components/constants";
+import { TodoItem } from "@/features/todo/pages/todo/components/todo-item";
 
 /** 加载骨架屏:行结构与 TodoItem 一致(勾选框 + 标题 + 删除按钮),避免加载完成后跳动 */
 function TodoListSkeleton() {

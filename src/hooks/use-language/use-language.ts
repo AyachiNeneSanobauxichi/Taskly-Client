@@ -1,5 +1,5 @@
 import type { SupportedLanguage } from "@/lib/i18n";
-import type { LanguageOption } from "./types";
+import type { LanguageOption } from "@/hooks/use-language/types";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { supportedLanguages } from "@/lib/i18n";

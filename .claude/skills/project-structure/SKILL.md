@@ -28,7 +28,7 @@ features/todo/
 ├─ index.ts        模块总出口:re-export types/schemas/api/hooks/pages
 ├─ types.ts        跨页面共享的类型
 ├─ schemas.ts      跨页面共享的 zod schema
-├─ api/            纯接口请求层(不含副作用)
+├─ api/            纯接口请求层(不含副作用);后端 DTO 类型放 api/types/,见 api-request 技能
 ├─ hooks/          TanStack Query hooks
 ├─ store/          zustand store(如 auth 有,todo 没有)
 └─ pages/
@@ -77,10 +77,14 @@ src/hooks/use-xxx/          src/components/task-xxx/
 
 ## 导入路径规则
 
-- 路径别名:`@/*` → `src/*`;全局 hooks 从 `@/hooks` 导入。
-- 外部消费者(router、layout 等)从模块 barrel 导入:`import { TodoPage } from "@/features/todo"`。
-- **feature 内的页面/组件导入本模块共享代码时,用子路径别名**(如 `@/features/todo/hooks`、`@/features/auth/schemas`),**不要**走模块根 barrel —— 否则形成 barrel → pages → 组件 → barrel 的循环依赖。
-- 同页面内的相对导入(`./components`)正常使用。
+- **禁止相对路径导入,一律用 `@/` 绝对路径**(`@/*` → `src/*`)。唯一例外见下。已由 ESLint `no-restricted-imports` 强制,违反直接报错。
+- 导入时选「**在不产生循环依赖的前提下,最上层的 `index.ts` 出口**」:
+  - 跨 feature / 外部消费者(router、layout 等)→ 模块根 barrel:`import { TodoPage } from "@/features/todo"`。
+  - feature 内部代码引本模块共享代码(走根 barrel 会成环)→ 子路径 barrel:`@/features/todo/hooks`、`@/features/auth/schemas`、`@/features/auth/api`。
+  - 子路径 barrel 仍会成环时(该目录 barrel 会 re-export 引用方自身,如同目录组件互引、`lib/request` 内部)→ 指向具体文件:`@/features/todo/pages/todo/components/todo-item`、`@/lib/request/types`。
+- **唯一例外**:`index.ts` 出口文件用 `./` 聚合**同目录**兄弟文件(`export * from "./xxx"`)—— 这是 barrel 固有职责、不跨模块,ESLint 已放行;但 index.ts 里同样禁止 `../`。
+- 全局 hooks 从 `@/hooks` 导入。
+- 仓库根的工具/构建配置(`*.config.ts`,`@/` 够不到根级文件如 `eslint-rules/`)豁免本规则。
 
 ## 命名约定
 

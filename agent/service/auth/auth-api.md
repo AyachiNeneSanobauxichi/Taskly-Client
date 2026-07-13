@@ -57,7 +57,7 @@ const response = {
 
 ```ts
 // post
-const path = "/auth/login";
+const path = "/auth/refresh-token";
 
 const request = {
   refreshToken: "occaecatadipisicingullamcoofficia",

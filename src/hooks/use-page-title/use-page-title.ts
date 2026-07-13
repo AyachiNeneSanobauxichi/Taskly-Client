@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { env } from "@/lib/env";
-import { TITLE_SEPARATOR } from "./constants";
+import { TITLE_SEPARATOR } from "@/hooks/use-page-title/constants";
 
 /**
  * 把 document.title 设为「页面标题 · 应用名」,组件卸载时还原为应用名。

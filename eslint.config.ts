@@ -49,6 +49,20 @@ const MOCK_IMPORT_PATTERN = {
     "mock 假数据只允许被同目录的 api 文件引用,hooks/页面不感知 mock(见 api-request 技能)",
 };
 
+// 禁止相对路径导入:一律 @/ 绝对路径,从不产生循环依赖前提下最上层的出口导入(见 project-structure 技能)
+const RELATIVE_IMPORT_BAN = {
+  regex: String.raw`^\.\.?(/|$)`,
+  message:
+    "禁止相对路径导入,一律用 @/ 绝对路径,并从不产生循环依赖前提下最上层的出口(index.ts)导入(见 project-structure 技能)",
+};
+
+// index.ts 出口文件例外:允许 ./ 聚合同目录文件(barrel 固有职责),但仍禁止 ../ 向上相对
+const PARENT_RELATIVE_IMPORT_BAN = {
+  regex: String.raw`^\.\.(/|$)`,
+  message:
+    "index.ts 出口只能用 ./ 聚合同目录文件,禁止 ../ 相对路径,跨目录一律 @/ 绝对路径(见 project-structure 技能)",
+};
+
 // Tailwind 调色板色名:业务代码必须用主题 token(text-primary 等),不许 text-red-500 这类裸色
 const PALETTE_COLOR_CLASS = String.raw`(?:^|[\s:])(?:text|bg|border|ring|fill|stroke|from|via|to|outline|decoration|divide|shadow|accent|caret)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d`;
 
@@ -97,7 +111,11 @@ export default defineConfig([
         "error",
         {
           paths: RESTRICTED_IMPORT_PATHS,
-          patterns: [...RESTRICTED_IMPORT_PATTERNS, MOCK_IMPORT_PATTERN],
+          patterns: [
+            ...RESTRICTED_IMPORT_PATTERNS,
+            MOCK_IMPORT_PATTERN,
+            RELATIVE_IMPORT_BAN,
+          ],
         },
       ],
 
@@ -201,16 +219,36 @@ export default defineConfig([
         "error",
         {
           paths: RESTRICTED_IMPORT_PATHS,
-          patterns: RESTRICTED_IMPORT_PATTERNS,
+          patterns: [...RESTRICTED_IMPORT_PATTERNS, RELATIVE_IMPORT_BAN],
         },
       ],
     },
   },
   {
-    // 构建配置文件按官方约定使用 default export(如 vite.config.ts)
+    // index.ts 出口文件:放宽到只禁 ../(允许 ./ 聚合同目录),其余禁令保持
+    files: ["**/index.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: RESTRICTED_IMPORT_PATHS,
+          patterns: [
+            ...RESTRICTED_IMPORT_PATTERNS,
+            MOCK_IMPORT_PATTERN,
+            PARENT_RELATIVE_IMPORT_BAN,
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // 构建/工具配置文件(vite.config.ts、eslint.config.ts 等):default export、
+    // 相对路径引根级文件(@/ 只指向 src/,够不到 eslint-rules 等)、长度均放行
     files: ["**/*.config.ts"],
     rules: {
       "no-restricted-syntax": "off",
+      "no-restricted-imports": "off",
+      "max-lines": "off",
     },
   },
 ]);

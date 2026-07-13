@@ -4,8 +4,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { authApi } from "../api";
-import { useAuthStore } from "../store";
+import { authApi } from "@/features/auth/api";
+import { useAuthStore } from "@/features/auth/store";
 import { queryClient } from "@/lib/request";
 
 /** 登录：成功后写入会话 + 跳主页 */
@@ -25,18 +25,16 @@ function useLogin() {
   });
 }
 
-/** 注册：成功后直接登录态 + 跳主页 */
+/** 注册：v1 注册不下发令牌，成功后跳登录页让用户登录 */
 function useRegister() {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
-  const setSession = useAuthStore((s) => s.setSession);
 
   return useMutation({
     mutationFn: authApi.register,
-    onSuccess: (data) => {
-      setSession(data);
+    onSuccess: () => {
       toast.success(t("register.success"));
-      navigate("/", { replace: true });
+      navigate("/login", { replace: true });
     },
     onError: (error: ApiError) => toast.error(error.message),
   });

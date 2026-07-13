@@ -10,7 +10,7 @@ alwaysApply: false
 
 ## 架构
 
-- `api-client.ts` —— 主 axios 实例,所有业务请求都走它;自动挂 accessToken、401 时单飞刷新后重放。
+- `api-client.ts` —— 主 axios 实例,所有业务请求都走它;自动挂 accessToken、401 时单飞刷新后重放、统一拆 `{ code, message, data }` 信封(业务层只见到 `data`,`code !== 0` 归一化成 `ApiError` 抛出)。
 - `refresh-token.ts` —— 刷新专用 client,**刻意不挂拦截器**,避免刷新请求自身 401 时递归。
 - `query-client.ts` —— 全局 TanStack QueryClient(4xx 不重试)。
 - `types.ts` —— `ApiError` 归一化结构:`{ status, message, fieldErrors? }`,业务层统一处理这个结构。
@@ -21,8 +21,8 @@ alwaysApply: false
 
 ```ts
 // features/xxx/api/xxx.api.ts
+import type { Xxx } from "@/features/xxx/types";
 import { apiClient } from "@/lib/request";
-import type { Xxx } from "../types";
 
 export const xxxApi = {
   list: async (): Promise<Xxx[]> => {
@@ -38,13 +38,32 @@ export const xxxApi = {
 
 后端返回结构与前端想用的模型不一致时(字段改名、日期字符串转 Date、扁平化嵌套、补默认值),**转换必须在 api 函数内完成**,api 对外返回的就是前端模型;**禁止把转换逻辑写进 tsx / 组件里**。
 
+**DTO 类型不写在 api 文件里**:统一放到 api 的 `types/` 文件夹,经 `index.ts` 出口导出,api 文件从 `@/features/<模块>/api/types` 绝对路径导入(禁止内联 DTO、禁止相对路径,见 `project-structure` 规则)。
+
+```
+features/xxx/api/
+├─ index.ts
+├─ xxx.api.ts
+└─ types/
+   ├─ index.ts        # export * from "./xxx.dto"
+   └─ xxx.dto.ts      # 后端原始结构 XxxDto
+```
+
 ```ts
-// features/xxx/api/xxx.api.ts
-/** 后端原始结构,只在 api 文件内可见,不导出 */
+// features/xxx/api/types/xxx.dto.ts —— 后端原始结构,只服务 api 层
 interface XxxDto {
   task_name: string;
   created_at: string;
 }
+
+export type { XxxDto };
+```
+
+```ts
+// features/xxx/api/xxx.api.ts
+import type { Xxx } from "@/features/xxx/types";
+import type { XxxDto } from "@/features/xxx/api/types";
+import { apiClient } from "@/lib/request";
 
 /** DTO → 前端模型;复杂转换可拆到同目录 transforms.ts */
 function toXxx(dto: XxxDto): Xxx {
@@ -59,7 +78,7 @@ export const xxxApi = {
 };
 ```
 
-- DTO 类型不导出、不进模块 `types.ts`;模块内其他代码只认识前端模型。
+- DTO 只服务 api 层:放 `api/types/`,**不进模块根 `types.ts`、不上抛到 feature 根 barrel**;模块内其他代码只认识前端模型。
 - 转换是纯函数,不做副作用;通用工具(pick/omit/groupBy 等)用 es-toolkit,见 `dev-workflow` 规则。
 - 多接口**合并/派生**属于数据层的事,放 hooks(`useQueries` + `combine`),见 `data-fetching` 规则。
 

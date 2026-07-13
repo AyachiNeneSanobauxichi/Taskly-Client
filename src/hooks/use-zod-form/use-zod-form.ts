@@ -1,6 +1,6 @@
 import type { FieldValues, UseFormReturn } from "react-hook-form";
 import type { ZodType } from "zod";
-import type { UseZodFormOptions } from "./types";
+import type { UseZodFormOptions } from "@/hooks/use-zod-form/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 

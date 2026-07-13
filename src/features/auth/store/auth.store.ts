@@ -1,4 +1,4 @@
-import type { AuthTokens, AuthUser } from "../types";
+import type { AuthTokens, AuthUser } from "@/features/auth/types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 

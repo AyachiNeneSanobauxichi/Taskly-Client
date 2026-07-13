@@ -1,5 +1,9 @@
 import type { AxiosError, AxiosInstance } from "axios";
-import type { ApiError, RetriableConfig } from "./types";
+import type {
+  ApiEnvelope,
+  ApiError,
+  RetriableConfig,
+} from "@/lib/request/types";
 import { create } from "axios";
 import { env } from "@/lib/env";
 import { refreshAccessToken } from "@/lib/request/refresh-token";
@@ -22,7 +26,22 @@ apiClient.interceptors.request.use((config) => {
 });
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // 统一信封 { code, message, data }：拆包后业务层只见到 data
+    const body = response.data as ApiEnvelope<unknown> | undefined;
+    if (body && typeof body === "object" && "code" in body) {
+      // 业务码非 0 视为错误，归一化成 ApiError 抛出
+      if (body.code !== 0) {
+        const apiError: ApiError = {
+          status: response.status,
+          message: body.message ?? "请求失败",
+        };
+        return Promise.reject(apiError);
+      }
+      response.data = body.data;
+    }
+    return response;
+  },
   async (error: AxiosError) => {
     const original = error.config as RetriableConfig | undefined;
     const status = error.response?.status;

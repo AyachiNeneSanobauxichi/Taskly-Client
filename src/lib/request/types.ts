@@ -1,5 +1,12 @@
 import type { InternalAxiosRequestConfig } from "axios";
 
+/** 后端统一响应信封 { code, message, data }；拦截器负责拆包，业务层只见到 data */
+interface ApiEnvelope<T> {
+  code: number;
+  message?: string;
+  data: T;
+}
+
 /** 归一化后的接口错误，业务层统一处理这个结构 */
 interface ApiError {
   status: number;
@@ -11,4 +18,4 @@ interface ApiError {
 // ── 响应拦截：401 单飞刷新 + 错误归一化 ─────────────────────
 type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
 
-export type { ApiError, RetriableConfig };
+export type { ApiEnvelope, ApiError, RetriableConfig };

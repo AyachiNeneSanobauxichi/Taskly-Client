@@ -67,11 +67,11 @@ src/
 
 | 规则                | 内容概要                                                                                        |
 | ------------------- | ----------------------------------------------------------------------------------------------- |
-| `project-structure` | 目录结构、代码归属判断、公共代码抽取(禁止复制粘贴)、命名约定                                    |
+| `project-structure` | 目录结构、代码归属判断、公共代码抽取(禁止复制粘贴)、命名约定、绝对路径导入(禁相对路径)          |
 | `coding-style`      | 导出放文件底部、`import type` 置顶、类型/常量拆分、注释与 TODO                                  |
 | `react-19`          | 禁 forwardRef / Context.Provider / useContext / React.FC 等老写法                               |
 | `dev-workflow`      | 只用 pnpm、依赖策略(es-toolkit,不造轮子)、验证边界、提交门禁                                    |
-| `api-request`       | api 文件写法、DTO 转换、mock 文件夹约定、循环依赖禁令                                           |
+| `api-request`       | api 文件写法、DTO 转换(独立 api/types/)、mock 文件夹约定、循环依赖禁令                          |
 | `data-fetching`     | queryKeys 工厂、乐观更新模板、多接口合并(页面只消费数据)                                        |
 | `forms`             | schema 工厂函数(支持 i18n)、`useZodForm` 统一入口                                               |
 | `routing-auth`      | 路由三件套、守卫、auth store、登录/登出流程                                                     |
@@ -86,7 +86,7 @@ src/
 - **UI 里不许硬编码**:用户可见文案走 `t()`,颜色/字体走主题 token(`text-primary` 而非 `text-red-500`)。
 - **页面只消费数据**:DTO 转换在 api 层,多接口合并/派生在 hooks 层,tsx 里不做数据加工。
 - **不要造轮子**:通用工具用 es-toolkit,通用 hooks 找成熟库,基础组件取 shadcn 官方实现,禁止直接导入 radix-ui。
-- **导入路径**:`@/` 别名指向 `src/`;feature 内部用子路径别名(如 `@/features/todo/hooks`),不走模块根 barrel,避免循环依赖。
+- **导入路径**:禁止相对路径,一律 `@/` 绝对路径,从「不成环前提下最上层的 index.ts 出口」导入(feature 内部用子路径别名如 `@/features/todo/hooks`,避免走根 barrel 成环);唯一例外——index.ts 用 `./` 聚合同目录。ESLint 已强制。
 - **按 agent/ 文档写代码**:只动 service 对应模块;需要改基建(路由/请求/主题/全局组件)必须先手动询问,不许顺手动 infra。
 
 ## 提交门禁

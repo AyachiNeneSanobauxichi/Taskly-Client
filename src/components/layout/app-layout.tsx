@@ -5,7 +5,7 @@ import { ShadcnButton } from "@/components";
 import { useAuthStore } from "@/features/auth/store";
 import { useLogout } from "@/features/auth/hooks";
 import { env } from "@/lib/env";
-import { LanguageSwitcher } from "./language-switcher";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 
 /** 登录后的主框架：顶部栏 + 内容区 */
 function AppLayout() {

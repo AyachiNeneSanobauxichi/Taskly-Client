@@ -1,12 +1,12 @@
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import commonZh from "./locales/zh/common.json";
-import authZh from "./locales/zh/auth.json";
-import todoZh from "./locales/zh/todo.json";
-import commonEn from "./locales/en/common.json";
-import authEn from "./locales/en/auth.json";
-import todoEn from "./locales/en/todo.json";
+import commonZh from "@/lib/i18n/locales/zh/common.json";
+import authZh from "@/lib/i18n/locales/zh/auth.json";
+import todoZh from "@/lib/i18n/locales/zh/todo.json";
+import commonEn from "@/lib/i18n/locales/en/common.json";
+import authEn from "@/lib/i18n/locales/en/auth.json";
+import todoEn from "@/lib/i18n/locales/en/todo.json";
 
 const supportedLanguages = [
   { code: "zh", label: "中文" },

@@ -1,6 +1,6 @@
 // 令牌刷新（单飞）：并发 401 时只发起一次刷新请求，其余请求共享同一个 Promise。
 import type { AxiosInstance } from "axios";
-import type { AuthTokens } from "@/features/auth/types";
+import type { ApiEnvelope } from "@/lib/request/types";
 import { create } from "axios";
 import { env } from "@/lib/env";
 import { useAuthStore } from "@/features/auth/store";
@@ -14,17 +14,19 @@ const refreshClient: AxiosInstance = create({
 /** 进行中的刷新请求；null 表示当前空闲 */
 let inflight: Promise<string> | null = null;
 
-/** 真正打刷新接口，成功后写回轮换的令牌对，返回新的 access token */
+/** 真正打刷新接口，成功后写回新的 access token（refresh token 不轮换，沿用原值），返回新的 access token */
 async function requestNewToken(): Promise<string> {
-  const { refreshToken } = useAuthStore.getState();
+  const { refreshToken, setTokens } = useAuthStore.getState();
   if (!refreshToken) throw new Error("缺少 refresh token，无法刷新会话");
 
-  const { data } = await refreshClient.post<AuthTokens>("/auth/refresh", {
-    refreshToken,
-  });
+  // refreshClient 不挂拦截器，拿到的是未拆包的原始信封
+  const { data } = await refreshClient.post<
+    ApiEnvelope<{ accessToken: string }>
+  >("/auth/refresh-token", { refreshToken });
 
-  useAuthStore.getState().setTokens(data);
-  return data.accessToken;
+  const accessToken = data.data.accessToken;
+  setTokens({ accessToken, refreshToken });
+  return accessToken;
 }
 
 /**

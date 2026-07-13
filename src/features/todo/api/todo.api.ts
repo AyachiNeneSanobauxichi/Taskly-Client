@@ -1,5 +1,5 @@
-import type { Todo } from "../types";
-import type { CreateTodoInput, UpdateTodoInput } from "../schemas";
+import type { Todo } from "@/features/todo/types";
+import type { CreateTodoInput, UpdateTodoInput } from "@/features/todo/schemas";
 import { apiClient } from "@/lib/request";
 
 const todoApi = {

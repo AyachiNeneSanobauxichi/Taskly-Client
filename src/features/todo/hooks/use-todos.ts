@@ -1,9 +1,9 @@
-import type { Todo } from "../types";
-import type { CreateTodoInput, UpdateTodoInput } from "../schemas";
+import type { Todo } from "@/features/todo/types";
+import type { CreateTodoInput, UpdateTodoInput } from "@/features/todo/schemas";
 import type { ApiError } from "@/lib/request";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { todoApi } from "../api";
+import { todoApi } from "@/features/todo/api";
 
 /** 查询键集中定义，避免散落各处拼错字符串 */
 const todoKeys = {
