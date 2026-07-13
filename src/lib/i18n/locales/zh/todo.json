@@ -4,16 +4,49 @@
     "description": "管理你今天要完成的事项"
   },
   "form": {
-    "placeholder": "添加一个新任务…",
-    "submit": "添加"
+    "nameLabel": "任务名称",
+    "namePlaceholder": "输入任务名称",
+    "contentLabel": "任务描述",
+    "contentPlaceholder": "详细描述这个任务",
+    "typeLabel": "优先级",
+    "typeNormal": "普通",
+    "typeImportant": "重要",
+    "typeUrgent": "紧急",
+    "statusLabel": "状态",
+    "statusPending": "待处理",
+    "statusDoing": "进行中",
+    "statusCompleted": "已完成",
+    "statusDeleted": "已删除",
+    "submit": "保存"
+  },
+  "search": {
+    "placeholder": "搜索任务名称…"
+  },
+  "pagination": {
+    "pageSize": "每页",
+    "pageInfo": "第 {{page}} / {{total}} 页",
+    "prev": "上一页",
+    "next": "下一页"
   },
   "list": {
     "loadError": "加载失败：",
     "unknownError": "未知错误",
     "empty": "还没有任务，先添加一个吧 🎉"
   },
+  "detail": {
+    "title": "任务详情",
+    "back": "返回列表",
+    "notFound": "任务不存在或已被删除",
+    "contentLabel": "任务描述",
+    "createdAt": "创建于：",
+    "updatedAt": "更新于："
+  },
   "validation": {
-    "titleRequired": "请输入任务内容",
-    "titleMax": "最多 200 个字符"
+    "nameRequired": "请输入任务名称",
+    "nameMax": "任务名称最多 200 个字符",
+    "contentRequired": "请输入任务描述",
+    "contentMax": "任务描述最多 2000 个字符",
+    "typeInvalid": "请选择有效的优先级",
+    "statusInvalid": "请选择有效的状态"
   }
 }

@@ -4,16 +4,49 @@
     "description": "Manage what you need to get done today"
   },
   "form": {
-    "placeholder": "Add a new task…",
-    "submit": "Add"
+    "nameLabel": "Task Name",
+    "namePlaceholder": "Enter task name",
+    "contentLabel": "Task Description",
+    "contentPlaceholder": "Describe this task in detail",
+    "typeLabel": "Priority",
+    "typeNormal": "Normal",
+    "typeImportant": "Important",
+    "typeUrgent": "Urgent",
+    "statusLabel": "Status",
+    "statusPending": "Pending",
+    "statusDoing": "In Progress",
+    "statusCompleted": "Completed",
+    "statusDeleted": "Deleted",
+    "submit": "Save"
+  },
+  "search": {
+    "placeholder": "Search by task name…"
+  },
+  "pagination": {
+    "pageSize": "Per page",
+    "pageInfo": "Page {{page}} of {{total}}",
+    "prev": "Previous page",
+    "next": "Next page"
   },
   "list": {
     "loadError": "Failed to load: ",
     "unknownError": "Unknown error",
     "empty": "No tasks yet, add one to get started 🎉"
   },
+  "detail": {
+    "title": "Task Details",
+    "back": "Back to list",
+    "notFound": "Task not found or has been deleted",
+    "contentLabel": "Description",
+    "createdAt": "Created: ",
+    "updatedAt": "Updated: "
+  },
   "validation": {
-    "titleRequired": "Please enter a task title",
-    "titleMax": "Must be at most 200 characters"
+    "nameRequired": "Please enter a task name",
+    "nameMax": "Task name must be at most 200 characters",
+    "contentRequired": "Please enter a task description",
+    "contentMax": "Task description must be at most 2000 characters",
+    "typeInvalid": "Please select a valid priority",
+    "statusInvalid": "Please select a valid status"
   }
 }

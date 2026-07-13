@@ -1,4 +1,4 @@
-import type { Todo } from "@/features/todo/types";
+import type { TodoListParams, TodoListResponse } from "@/features/todo/types";
 import type { CreateTodoInput, UpdateTodoInput } from "@/features/todo/schemas";
 import type { ApiError } from "@/lib/request";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,74 +8,117 @@ import { todoApi } from "@/features/todo/api";
 /** 查询键集中定义，避免散落各处拼错字符串 */
 const todoKeys = {
   all: ["todos"] as const,
-  list: () => [...todoKeys.all, "list"] as const,
+  lists: () => [...todoKeys.all, "list"] as const,
+  list: (params?: TodoListParams) =>
+    [...todoKeys.lists(), params ?? {}] as const,
+  details: () => [...todoKeys.all, "detail"] as const,
+  detail: (id: string) => [...todoKeys.details(), id] as const,
 };
 
-/** 任务列表 */
-function useTodos() {
+/** 任务列表：随查询参数(搜索/分页/排序)变化缓存 */
+function useTodos(params?: TodoListParams) {
   return useQuery({
-    queryKey: todoKeys.list(),
-    queryFn: todoApi.list,
+    queryKey: todoKeys.list(params),
+    queryFn: () => todoApi.list(params),
   });
 }
 
-/** 新建任务：成功后让列表失效重新拉取 */
+/** 单个任务详情 */
+function useTodoDetail(id: string) {
+  return useQuery({
+    queryKey: todoKeys.detail(id),
+    queryFn: () => todoApi.detail(id),
+    enabled: Boolean(id),
+  });
+}
+
+/** 新建任务：成功后让所有列表变体失效重新拉取 */
 function useCreateTodo() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: CreateTodoInput) => todoApi.create(input),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: todoKeys.list() });
+      qc.invalidateQueries({ queryKey: todoKeys.lists() });
     },
     onError: (error: ApiError) => toast.error(error.message),
   });
 }
 
-/** 更新任务（含勾选）：乐观更新 —— 先改本地，失败再回滚 */
+/** 更新任务：乐观更新所有列表变体 —— 先改本地，失败再回滚 */
 function useUpdateTodo() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateTodoInput }) =>
       todoApi.update(id, input),
     onMutate: async ({ id, input }) => {
-      await qc.cancelQueries({ queryKey: todoKeys.list() });
-      const previous = qc.getQueryData<Todo[]>(todoKeys.list());
-      qc.setQueryData<Todo[]>(todoKeys.list(), (old) =>
-        (old ?? []).map((t) => (t.id === id ? { ...t, ...input } : t)),
+      await qc.cancelQueries({ queryKey: todoKeys.lists() });
+      // 快照所有列表变体(不同搜索/分页参数),失败时逐一回滚
+      const previous = qc.getQueriesData<TodoListResponse>({
+        queryKey: todoKeys.lists(),
+      });
+      qc.setQueriesData<TodoListResponse>(
+        { queryKey: todoKeys.lists() },
+        (old) =>
+          old
+            ? {
+                ...old,
+                docs: old.docs.map((t) =>
+                  t._id === id ? { ...t, ...input } : t,
+                ),
+              }
+            : old,
       );
       return { previous };
     },
     onError: (error: ApiError, _vars, context) => {
-      qc.setQueryData(todoKeys.list(), context?.previous);
+      context?.previous?.forEach(([key, data]) => qc.setQueryData(key, data));
       toast.error(error.message);
     },
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: todoKeys.list() });
+    onSettled: (_data, _err, { id }) => {
+      qc.invalidateQueries({ queryKey: todoKeys.lists() });
+      qc.invalidateQueries({ queryKey: todoKeys.detail(id) });
     },
   });
 }
 
-/** 删除任务：同样乐观更新 */
+/** 删除任务：同样乐观更新所有列表变体 */
 function useDeleteTodo() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => todoApi.remove(id),
     onMutate: async (id) => {
-      await qc.cancelQueries({ queryKey: todoKeys.list() });
-      const previous = qc.getQueryData<Todo[]>(todoKeys.list());
-      qc.setQueryData<Todo[]>(todoKeys.list(), (old) =>
-        (old ?? []).filter((t) => t.id !== id),
+      await qc.cancelQueries({ queryKey: todoKeys.lists() });
+      const previous = qc.getQueriesData<TodoListResponse>({
+        queryKey: todoKeys.lists(),
+      });
+      qc.setQueriesData<TodoListResponse>(
+        { queryKey: todoKeys.lists() },
+        (old) =>
+          old
+            ? {
+                ...old,
+                docs: old.docs.filter((t) => t._id !== id),
+                totalDocs: Math.max(0, old.totalDocs - 1),
+              }
+            : old,
       );
       return { previous };
     },
     onError: (error: ApiError, _id, context) => {
-      qc.setQueryData(todoKeys.list(), context?.previous);
+      context?.previous?.forEach(([key, data]) => qc.setQueryData(key, data));
       toast.error(error.message);
     },
     onSettled: () => {
-      qc.invalidateQueries({ queryKey: todoKeys.list() });
+      qc.invalidateQueries({ queryKey: todoKeys.lists() });
     },
   });
 }
 
-export { todoKeys, useCreateTodo, useDeleteTodo, useTodos, useUpdateTodo };
+export {
+  todoKeys,
+  useCreateTodo,
+  useDeleteTodo,
+  useTodoDetail,
+  useTodos,
+  useUpdateTodo,
+};

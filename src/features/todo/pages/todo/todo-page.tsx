@@ -1,11 +1,18 @@
+import { useState } from "react";
+import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { usePageTitle } from "@/hooks";
+import { ShadcnInput } from "@/components/ui/input";
+import { useDebouncedValue } from "@/features/todo/hooks";
 import { TodoForm, TodoList } from "@/features/todo/pages/todo/components";
+import { usePageTitle } from "@/hooks";
 
-/** 任务页:标题栏 + 新建表单 + 任务列表,登录后的主页面 */
+/** 任务页:标题栏 + 新建表单 + 搜索 + 任务列表,登录后的主页面 */
 function TodoPage() {
   const { t } = useTranslation("todo");
   usePageTitle(t("page.title"));
+  const [search, setSearch] = useState("");
+  // 防抖后再作为查询参数,避免每次按键都请求
+  const debouncedSearch = useDebouncedValue(search);
 
   return (
     <div className="space-y-6">
@@ -16,7 +23,16 @@ function TodoPage() {
         </p>
       </div>
       <TodoForm />
-      <TodoList />
+      <div className="relative">
+        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+        <ShadcnInput
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={t("search.placeholder")}
+          className="pl-9"
+        />
+      </div>
+      <TodoList search={debouncedSearch} />
     </div>
   );
 }

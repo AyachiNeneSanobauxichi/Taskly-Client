@@ -3,7 +3,7 @@ import { ProtectedRoute, PublicOnlyRoute } from "@/app/router/guards";
 import { routeNames } from "@/app/router/route-names";
 import { AppLayout } from "@/components/layout/app-layout";
 import { LoginPage, RegisterPage } from "@/features/auth";
-import { TodoPage } from "@/features/todo";
+import { TodoDetailPage, TodoPage } from "@/features/todo";
 import { NotFoundPage } from "@/components";
 
 const router = createBrowserRouter([
@@ -19,7 +19,10 @@ const router = createBrowserRouter([
     children: [
       {
         element: <AppLayout />,
-        children: [{ index: true, element: <TodoPage /> }],
+        children: [
+          { index: true, element: <TodoPage /> },
+          { path: routeNames.todoDetail, element: <TodoDetailPage /> },
+        ],
       },
     ],
   },
