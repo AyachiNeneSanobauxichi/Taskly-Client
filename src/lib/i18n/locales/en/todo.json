@@ -3,6 +3,22 @@
     "title": "My Tasks",
     "description": "Manage what you need to get done today"
   },
+  "actions": {
+    "create": "New Task",
+    "edit": "Edit",
+    "delete": "Delete",
+    "restore": "Restore",
+    "cancel": "Cancel",
+    "clear": "Clear filters",
+    "save": "Save"
+  },
+  "create": {
+    "title": "New Task",
+    "description": "Fill in the details to create a new task"
+  },
+  "edit": {
+    "title": "Edit Task"
+  },
   "form": {
     "nameLabel": "Task Name",
     "namePlaceholder": "Enter task name",
@@ -22,6 +38,10 @@
   "search": {
     "placeholder": "Search by task name…"
   },
+  "filters": {
+    "typeAll": "All priorities",
+    "statusAll": "All statuses"
+  },
   "pagination": {
     "pageSize": "Per page",
     "pageInfo": "Page {{page}} of {{total}}",
@@ -40,6 +60,22 @@
     "contentLabel": "Description",
     "createdAt": "Created: ",
     "updatedAt": "Updated: "
+  },
+  "delete": {
+    "title": "Delete Task",
+    "message": "Delete task \"{{name}}\"? This action cannot be undone.",
+    "confirm": "Confirm delete"
+  },
+  "restore": {
+    "title": "Restore Task",
+    "message": "Restore task \"{{name}}\"? It will be set back to pending.",
+    "confirm": "Confirm restore"
+  },
+  "toast": {
+    "created": "Task created",
+    "updated": "Task updated",
+    "deleted": "Task deleted",
+    "restored": "Task restored"
   },
   "validation": {
     "nameRequired": "Please enter a task name",

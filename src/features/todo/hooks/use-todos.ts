@@ -2,6 +2,7 @@ import type { TodoListParams, TodoListResponse } from "@/features/todo/types";
 import type { CreateTodoInput, UpdateTodoInput } from "@/features/todo/schemas";
 import type { ApiError } from "@/lib/request";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { todoApi } from "@/features/todo/api";
 
@@ -32,20 +33,25 @@ function useTodoDetail(id: string) {
   });
 }
 
-/** 新建任务：成功后让所有列表变体失效重新拉取 */
+/** 新建任务：成功后提示 + 让所有列表变体失效重新拉取 */
 function useCreateTodo() {
+  const { t } = useTranslation("todo");
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: CreateTodoInput) => todoApi.create(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: todoKeys.lists() });
+      toast.success(t("toast.created"));
     },
     onError: (error: ApiError) => toast.error(error.message),
   });
 }
 
-/** 更新任务：乐观更新所有列表变体 —— 先改本地，失败再回滚 */
-function useUpdateTodo() {
+/** 更新任务：乐观更新所有列表变体 —— 先改本地，失败再回滚;成功文案可区分(编辑/恢复) */
+function useUpdateTodo(
+  successMessageKey: "toast.updated" | "toast.restored" = "toast.updated",
+) {
+  const { t } = useTranslation("todo");
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateTodoInput }) =>
@@ -70,6 +76,7 @@ function useUpdateTodo() {
       );
       return { previous };
     },
+    onSuccess: () => toast.success(t(successMessageKey)),
     onError: (error: ApiError, _vars, context) => {
       context?.previous?.forEach(([key, data]) => qc.setQueryData(key, data));
       toast.error(error.message);
@@ -83,6 +90,7 @@ function useUpdateTodo() {
 
 /** 删除任务：同样乐观更新所有列表变体 */
 function useDeleteTodo() {
+  const { t } = useTranslation("todo");
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => todoApi.remove(id),
@@ -104,6 +112,7 @@ function useDeleteTodo() {
       );
       return { previous };
     },
+    onSuccess: () => toast.success(t("toast.deleted")),
     onError: (error: ApiError, _id, context) => {
       context?.previous?.forEach(([key, data]) => qc.setQueryData(key, data));
       toast.error(error.message);
