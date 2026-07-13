@@ -46,6 +46,26 @@ agent/
 
 页面只消费数据,数据加工留在 api / hooks 层(见 `data-fetching`)。
 
+## -api 文档编写规范
+
+`service/<module>/<module>-api.md` 是该模块请求层的规格。编写时遵守:
+
+- **只写接口,不接页面**:文档里只描述请求函数所需信息(方法、路径、请求体、响应体),**不涉及任何页面/组件接入、状态管理、UI 逻辑**——那些属于 `-page`。一句话:`-api` 只做请求函数。
+- **复用优先,不造轮子**:多个接口 / 模块出现相同的接口或返回对象类型时,**复用已有的,不要重复定义**;允许后接入的模块复用先前其他模块已声明的类型(如各处都用到的 `user` 对象)。落到代码即 `types.ts` 的公共类型复用(见 `project-structure` / `api-request`)。
+
+### 编写格式(以 `auth-api.md` 为准)
+
+- 文档标题 `## <module> api`,按版本分段(`# v1`、`# v2` …)。
+- **每个接口一个列表项** `- xxx api`,紧跟一段 ts 代码块描述形状:
+  - 首行注释请求方法:`// post` / `// get` …
+  - `const path = "/auth/register";` —— 相对路径(**不含**全局 `api` 前缀,前缀由请求层统一加,见 `agent/infra/request.md`)。
+  - 需要鉴权的接口加注释 `// need authorization`。
+  - `const request = { ... }` —— 请求体形状;字段值写类型占位(`"string"`)或示例值;无请求体则省略。
+  - `const response = { code, message, data }` —— 响应体形状,用示例值展示;无数据时 `data: null`。
+  - **可复用的对象结构用注释标注类型名**(如 `// user`),提示这是跨接口 / 跨模块共享的类型,生成代码时复用同一个模型。
+
+参考范例:`agent/service/auth/auth-api.md`。
+
 ## 与其他规范的关系
 
 `agent/` 定义需求(做什么),`.cursor/rules` 定义写法(怎么写)。冲突时:写法以规则为准,边界以本规则为准。本规则约束的是工作流与代码组织,无法用 ESLint 静态强制,靠生成时自查与 code review 兜底。

@@ -65,21 +65,21 @@ src/
 
 完整规范以 **`.claude/skills/`** 为唯一事实源(Claude Code 自动加载),并同步了一份到 **`.cursor/rules/`**(Cursor 自动加载)。用其他编辑器的直接阅读这两处的 markdown,内容相同。能静态检查的条款都已落到 ESLint(含 `eslint-rules/` 自定义规则),违反会在保存/提交时直接报错。共 13 个主题:
 
-| 规则                | 内容概要                                                                     |
-| ------------------- | ---------------------------------------------------------------------------- |
-| `project-structure` | 目录结构、代码归属判断、公共代码抽取(禁止复制粘贴)、命名约定                 |
-| `coding-style`      | 导出放文件底部、`import type` 置顶、类型/常量拆分、注释与 TODO               |
-| `react-19`          | 禁 forwardRef / Context.Provider / useContext / React.FC 等老写法            |
-| `dev-workflow`      | 只用 pnpm、依赖策略(es-toolkit,不造轮子)、验证边界、提交门禁                 |
-| `api-request`       | api 文件写法、DTO 转换、mock 文件夹约定、循环依赖禁令                        |
-| `data-fetching`     | queryKeys 工厂、乐观更新模板、多接口合并(页面只消费数据)                     |
-| `forms`             | schema 工厂函数(支持 i18n)、`useZodForm` 统一入口                            |
-| `routing-auth`      | 路由三件套、守卫、auth store、登录/登出流程                                  |
-| `ui-style`          | Shadcn 前缀导出、禁直接导入 radix-ui、颜色/字体只走主题 token                |
-| `i18n`              | 禁硬编码文案、新增翻译四步流程、类型安全的 t()                               |
-| `global-hooks`      | 全局 hooks 清单与新增模板                                                    |
-| `rules-maintenance` | 元规则:规范变更时同步 ESLint / cursor 副本 / README                          |
-| `agent-docs`        | 文档驱动开发:agent/ 需求事实源、只动 service、动 infra 先问、-api/-page 拆分 |
+| 规则                | 内容概要                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| `project-structure` | 目录结构、代码归属判断、公共代码抽取(禁止复制粘贴)、命名约定                                    |
+| `coding-style`      | 导出放文件底部、`import type` 置顶、类型/常量拆分、注释与 TODO                                  |
+| `react-19`          | 禁 forwardRef / Context.Provider / useContext / React.FC 等老写法                               |
+| `dev-workflow`      | 只用 pnpm、依赖策略(es-toolkit,不造轮子)、验证边界、提交门禁                                    |
+| `api-request`       | api 文件写法、DTO 转换、mock 文件夹约定、循环依赖禁令                                           |
+| `data-fetching`     | queryKeys 工厂、乐观更新模板、多接口合并(页面只消费数据)                                        |
+| `forms`             | schema 工厂函数(支持 i18n)、`useZodForm` 统一入口                                               |
+| `routing-auth`      | 路由三件套、守卫、auth store、登录/登出流程                                                     |
+| `ui-style`          | Shadcn 前缀导出、禁直接导入 radix-ui、颜色/字体只走主题 token                                   |
+| `i18n`              | 禁硬编码文案、新增翻译四步流程、类型安全的 t()                                                  |
+| `global-hooks`      | 全局 hooks 清单与新增模板                                                                       |
+| `rules-maintenance` | 元规则:规范变更时同步 ESLint / cursor 副本 / README                                             |
+| `agent-docs`        | 文档驱动开发:agent/ 需求事实源、只动 service、动 infra 先问、-api/-page 拆分、-api 文档编写规范 |
 
 几条最容易踩的铁律,先记住:
 
