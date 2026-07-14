@@ -10,9 +10,9 @@ const authApi = {
       identifier: input.identifier,
       password: input.password,
     });
+    // refresh token 由后端 httpOnly cookie 下发，响应体里的 refreshToken 前端忽略
     return {
       accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
       user: { email: data.user.email, username: data.user.username },
     };
   },

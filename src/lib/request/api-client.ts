@@ -12,7 +12,9 @@ import { useAuthStore } from "@/features/auth/store";
 /** 主客户端：所有业务请求都走它 */
 const apiClient: AxiosInstance = create({
   baseURL: env.VITE_API_BASE_URL,
-  headers: { "Content-Type": "application/json" },
+  // X-Client-Type 告诉后端是 web 登录；withCredentials 让 refresh 的 httpOnly cookie 自动携带
+  headers: { "Content-Type": "application/json", "X-Client-Type": "web" },
+  withCredentials: true,
   timeout: 15_000,
 });
 

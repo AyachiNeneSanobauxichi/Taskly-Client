@@ -8,24 +8,23 @@ import { useAuthStore } from "@/features/auth/store";
 /** 刷新专用客户端：刻意不挂任何拦截器，避免刷新请求自身 401 时递归刷新 */
 const refreshClient: AxiosInstance = create({
   baseURL: env.VITE_API_BASE_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: { "Content-Type": "application/json", "X-Client-Type": "web" },
+  // refresh token 在 httpOnly cookie 里，靠 withCredentials 自动携带
+  withCredentials: true,
 });
 
 /** 进行中的刷新请求；null 表示当前空闲 */
 let inflight: Promise<string> | null = null;
 
-/** 真正打刷新接口，成功后写回新的 access token（refresh token 不轮换，沿用原值），返回新的 access token */
+/** 真正打刷新接口：空 body，refresh token 由 cookie 自动携带；成功后写回新的 access token */
 async function requestNewToken(): Promise<string> {
-  const { refreshToken, setTokens } = useAuthStore.getState();
-  if (!refreshToken) throw new Error("缺少 refresh token，无法刷新会话");
-
   // refreshClient 不挂拦截器，拿到的是未拆包的原始信封
   const { data } = await refreshClient.post<
     ApiEnvelope<{ accessToken: string }>
-  >("/auth/refresh-token", { refreshToken });
+  >("/auth/refresh-token", {});
 
   const accessToken = data.data.accessToken;
-  setTokens({ accessToken, refreshToken });
+  useAuthStore.getState().setAccessToken(accessToken);
   return accessToken;
 }
 

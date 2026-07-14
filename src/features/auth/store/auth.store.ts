@@ -12,17 +12,15 @@ const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       accessToken: null,
-      refreshToken: null,
-      setSession: ({ user, accessToken, refreshToken }) =>
-        set({ user, accessToken, refreshToken }),
-      setTokens: ({ accessToken, refreshToken }) =>
-        set({ accessToken, refreshToken }),
-      clearSession: () =>
-        set({ user: null, accessToken: null, refreshToken: null }),
+      setSession: ({ user, accessToken }) => set({ user, accessToken }),
+      setAccessToken: (accessToken) => set({ accessToken }),
+      clearSession: () => set({ user: null, accessToken: null }),
     }),
     {
       name: "taskly.auth",
       storage: createJSONStorage(() => localStorage),
+      // accessToken 只存内存；仅持久化 user 供启动静默 refresh 期间回显
+      partialize: (state) => ({ user: state.user }),
     },
   ),
 );
